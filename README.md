@@ -1,10 +1,14 @@
-CSE305-DATABASES ECOMMERCE PROJECT
+# ECOMMERCE PROJECT
 
-TEAM JAM
-	Jason Dong
-	Agnieszka Gawrys
-	Melanie Logan
+This project is a databases course (CSE305) at Stony Brook University. The members are
 
-LOG
-[4-28]	Created local branch
-[4-29]	Crated Django project and setup the database
+**TEAM JAM**
+*	Jason Dong
+*	Agnieszka Gawrys
+*	Melanie Logan
+
+## LOG
+
+**[** *4-28* **]** 	Created local branch
+
+**[** *4-29* **]**	Crated Django project and setup the database
