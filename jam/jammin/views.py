@@ -1,10 +1,44 @@
 from django.shortcuts import render
 from django.http import	HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login
 
-from .forms import EmployeeAppForm, EmployeeLoginForm
+from .forms import AccountCreationForm, UserSignUpForm, LoginForm, EmployeeAppForm, EmployeeLoginForm
 
 def index(request):
-	return render(request, 'index.html')
+	return render(request, 'index.html', {'user': request.user})
+
+def user_signup(request):
+	if request.method == 'POST':
+		account_form = AccountCreationForm(request.POST)
+		user_form = UserSignUpForm(request.POST)
+		if account_form.is_valid() and user_form.is_valid():
+			account = account_form.save()
+			user = user_form.save(commit=False)
+			user.account = account
+			user.save()
+			return HttpResponseRedirect('/')
+	else:
+		account_form = AccountCreationForm()
+		user_form = UserSignUpForm()
+
+	return render(request, 'user_signup.html', {'account_form': account_form, 'user_form': user_form})
+
+def user_login(request):
+	if request.method == 'POST':
+		login_form = LoginForm(request.POST)
+		if login_form.is_valid():
+			email = request.POST['email']
+			password = request.POST['password']
+			account = authenticate(request, email=email, password=password)
+			if account is not None:
+				login(request, account)
+				return HttpResponseRedirect('/')
+			else:
+				return HttpResponseRedirect('/login')
+	else:
+		login_form = LoginForm()
+
+	return render(request, 'login.html', {'login_form': login_form})
 
 def employee_app(request):
 	if request.method == 'POST':

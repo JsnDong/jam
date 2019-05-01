@@ -1,5 +1,30 @@
-<h2>Jammin Landing Page</h2>
+<!DOCTYPE html>
+<html>
 
-<a href="/employee_login">Employees</a>
+<head>
+	<title>Index</title>
+</head>
 
-<a href="/employee_app">Careers</a>
+<body>
+	<h2>Jammin Landing Page</h2>
+
+	<p>
+		{% if user.is_authenticated %}
+			Hello, {{ user.name }}
+		{% else %}
+			<a href="/login">Login</a> or <a href="/signup">Sign Up</a>
+		{% endif %}
+	</p>
+
+	<p>
+		<a href="/employee_login">Employees</a>
+	</p>
+
+	<p>
+		<a href="/employee_app">Careers</a>
+	</p>
+</body>
+
+</html>
+
+

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
-from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from .managers import AccountManager, EmployeeManager
 
@@ -36,19 +36,13 @@ class Account(AbstractBaseUser):
 		return self.is_admin
 
 class UserAccount(models.Model):
-	account = models.OneToOneField(Account,
-								   on_delete=models.CASCADE
-	)
-
-	userid = models.AutoField(primary_key=True,\
-							  validators=[MinValueValidator(100000000),
-										 	  MaxValueValidator(999999999)])
-	username = models.CharField(max_length=255, unique=True)
-
-	#objects = UserManager()
-
-	def __str__(self):
-		return str(self.userid)
+    alpha = RegexValidator(r'^[a-zA-Z]*$', 'Only letter characters are allowed.')
+    first_name = models.CharField(max_length=200,blank =False,null=True,validators=[alpha])
+    surname = models.CharField(max_length=200,blank =False,null=True,validators=[alpha])
+    username = models.CharField(max_length=200, primary_key=True, unique=True,blank =False,null=True)
+    userId = models.CharField(max_length=200, primary_key=True, unique=True)
+    date_of_birth = models.DateField(blank =False,null=True)
+    account = models.ForeignKey('Account', on_delete=models.CASCADE)
 
 class EmployeeAccount(models.Model):
 	account = models.OneToOneField(

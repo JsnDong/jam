@@ -27,7 +27,16 @@ class AccountManager(BaseUserManager):
 
 		user.save()
 		return user
-		
+
+'''
+class UserManager(model.Managers):
+	def create_user(self, username):
+		user = self.create(username = username)
+		user.save()
+		return user
+'''
+
+
 class EmployeeManager(models.Manager):
 	def create_employee(self, account, name, surname):
 		employee = self.create(account = account)
