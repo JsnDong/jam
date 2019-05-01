@@ -1,3 +1,4 @@
+from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 
 class AccountManager(BaseUserManager):
@@ -27,3 +28,10 @@ class AccountManager(BaseUserManager):
 		user.save()
 		return user
 		
+class EmployeeManager(models.Manager):
+	def create_employee(self, account, name, surname):
+		employee = self.create(account = account)
+		employee.save()
+		return employee
+
+

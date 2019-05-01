@@ -8,8 +8,10 @@ def index(request):
 
 def employee_app(request):
 	if request.method == 'POST':
-		form = EmployeeAppForm(request.POST)
+		form = EmployeeAppForm(request.POST, request.FILES)
 		if form.is_valid():
+			candidate = form.save(commit=False)
+			candidate.save()
 			return HttpResponseRedirect('/app_confirm')
 	else:
 		form = EmployeeAppForm()

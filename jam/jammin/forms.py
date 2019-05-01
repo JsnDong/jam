@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import Account
+from .models import Account, EmployeeApp
 
 class AccountCreationForm(forms.ModelForm):
 	password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -35,11 +35,16 @@ class AccountChangeForm(forms.ModelForm):
 	def clean_password(self):
 		return self.initial['password']
 
-class EmployeeAppForm(forms.Form):
-	name = forms.CharField(label='First Name')
-	surname = forms.CharField(label='Last Name')
-	email = forms.EmailField(label='Email')
-	#resume = forms.FileField(label="Resume")
+class EmployeeAppForm(forms.ModelForm):
+	class Meta:
+		model = EmployeeApp
+		fields = ('name', 'surname', 'email', 'dob', 'resume')
+
+	def save(self, commit=True):
+		app = super().save(commit=False)
+		if commit:
+			app.save()
+		return app
 
 class EmployeeLoginForm(forms.Form):
 	employee_id = forms.CharField(label='Employee ID')

@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-from .managers import AccountManager
+from .managers import AccountManager, EmployeeManager
 
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
@@ -33,3 +34,37 @@ class Account(AbstractBaseUser):
 	@property
 	def is_staff(self):
 		return self.is_admin
+
+class EmployeeAccount(models.Model):
+	account = models.OneToOneField(
+		Account,
+		on_delete = models.CASCADE
+	)
+
+	employeeid = models.AutoField(primary_key=True,\
+							      validators=[MinValueValidator(100000000),
+										 	  MaxValueValidator(999999999)])
+	salary = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+	wage = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+
+	subordinates = models.ManyToManyField('self')
+	supervisors = models.ManyToManyField('self')
+
+	objects = EmployeeManager()
+
+	def __str__(self):
+		return str(self.employeeid)
+
+class EmployeeApp(models.Model):
+	candidateid = models.AutoField(primary_key=True,\
+								   validators=[MinValueValidator(100000000),
+											   MaxValueValidator(999999999)])
+	name = models.CharField(max_length=255, blank=False)
+	surname = models.CharField(max_length=255, blank=False)
+	email = models.EmailField(max_length=255, blank=False)
+	dob = models.DateField(null=True)
+	resume = models.FileField(blank=False)
+
+	def __str__(self):
+		return str.email
+
