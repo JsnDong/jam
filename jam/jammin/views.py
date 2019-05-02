@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import	HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from .forms import AccountCreationForm, UserSignUpForm, LoginForm, EmployeeAppForm, EmployeeLoginForm
 
 def index(request):
-	return render(request, 'index.html', {'user': request.user})
+	return render(request, 'index.html', {'account': request.user})
 
 def user_signup(request):
 	if request.method == 'POST':
@@ -40,6 +40,10 @@ def user_login(request):
 
 	return render(request, 'login.html', {'login_form': login_form})
 
+def account_logout(request):
+	logout(request)
+	return HttpResponseRedirect('/')
+
 def employee_app(request):
 	if request.method == 'POST':
 		form = EmployeeAppForm(request.POST, request.FILES)
@@ -64,3 +68,21 @@ def employee_login(request):
 		form = EmployeeLoginForm()
 
 	return render(request, 'employee_login.html', {'form': form})
+
+def user_profile(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+
+	return render(request, "user_profile.html")
+
+def user_store(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+
+	return render(request, "user_store.html")
+
+def add_item(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+
+	#if request.method='POST':

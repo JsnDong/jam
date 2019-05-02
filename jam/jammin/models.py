@@ -4,6 +4,15 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 
 from .managers import AccountManager, EmployeeManager
 
+class Item(models.Model):
+	itemid = models.AutoField(primary_key=True,\
+							  validators=[MinValueValidator(100000000),
+										  MaxValueValidator(999999999)])
+	name = models.CharField(max_length=255, blank=False)
+
+	def __str__(self):
+		return self.name
+
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
 	name = models.CharField(max_length=255, blank=False)
@@ -45,10 +54,21 @@ class UserAccount(models.Model):
 										 	  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
 
+	store = models.ManyToManyField(Item, through='Sells')
+
 	#objects = UserManager()
 
 	def __str__(self):
 		return str(self.userid)
+
+class Sells(models.Model):
+	seller = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+	item = models.ForeignKey(Item, on_delete=models.CASCADE)
+	price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+	quantity = models.IntegerField(validators=[MinValueValidator(1)])
+
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
 
 class EmployeeAccount(models.Model):
 	account = models.OneToOneField(
@@ -60,7 +80,7 @@ class EmployeeAccount(models.Model):
 							      validators=[MinValueValidator(100000000),
 										 	  MaxValueValidator(999999999)])
 	salary = models.DecimalField(max_digits=11, decimal_places=2, null=True)
-	wage = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+	wage = models.DecimalField(max_digits=11, decimal_places=2, null=True)
 
 	subordinates = models.ManyToManyField('self')
 	supervisors = models.ManyToManyField('self')
@@ -81,5 +101,4 @@ class EmployeeApp(models.Model):
 	resume = models.FileField(blank=False)
 
 	def __str__(self):
-		return str.email
-
+		return self.email
