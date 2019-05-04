@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import	HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import AccountCreationForm, UserSignUpForm, LoginForm, EmployeeAppForm, EmployeeLoginForm
+from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
+from . import models
 
 def index(request):
 	return render(request, 'index.html', {'account': request.user})
@@ -70,19 +72,72 @@ def employee_login(request):
 	return render(request, 'employee_login.html', {'form': form})
 
 def user_profile(request, username):
-	if not request.user.is_authenticated:
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
 		return HttpResponseRedirect('/')
 
 	return render(request, "user_profile.html")
 
 def user_store(request, username):
-	if not request.user.is_authenticated:
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
 		return HttpResponseRedirect('/')
 
-	return render(request, "user_store.html")
+	user = request.user.useraccount
+	store = user.store.all()
+	listings = list()
+	for item in store:
+		sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
+		listing = [item, sells]
+		listings += [listing]
+
+	return render(request, "user_store.html", {'user': user, 'listings':listings})
 
 def add_item(request, username):
-	if not request.user.is_authenticated:
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
 		return HttpResponseRedirect('/')
 
-	#if request.method='POST':
+	if request.method == 'POST':
+		item_form = AddItemForm(request.POST, request.FILES)
+		sells_form = SellsForm(request.POST)
+		if item_form.is_valid() and sells_form.is_valid():
+			user = request.user.useraccount
+			if not request.POST.get("cancel"):
+				item = item_form.save(commit=False)
+				item.author = request.user.useraccount
+				item.save()
+				sells = sells_form.save(commit=False)
+				sells.seller = user
+				sells.item = item
+				sells.save()
+			if request.POST.get("another"):
+				return HttpResponseRedirect(reverse('add_item', kwargs={'username': user.username}))
+			else:
+				return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
+	else:
+		item_form = AddItemForm()
+		sells_form = SellsForm()
+
+	return render(request, "add_item.html", {'item_form': item_form, 'sells_form': sells_form})
+
+def drop_item(request, username, itemid):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	sells= models.Sells.objects.get(seller=user.userid, item=itemid)
+	sells.delete()
+	models.Item.objects.filter(itemid=itemid, useraccount=None).delete()
+
+	return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
+
+'''
+def modify_item(request, username, itemid):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	if request.method == 'POST':
+'''

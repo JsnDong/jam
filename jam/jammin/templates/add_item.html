@@ -7,6 +7,44 @@
 
 <body>
 	<h2>Store: Add Item</h2>
+
+	<form action="" enctype="multipart/form-data" method="post">
+		{% csrf_token %}
+
+		<p>
+			<label>Name</label>
+			{{ item_form.name }}
+		</p>
+
+		<p>
+			<label>Image</label>
+			{{ item_form.image }}
+		</p>
+
+		<p>
+			<label>Category</label>
+			{{ item_form.dept }}
+		</p>
+
+		<p>
+			<label>Description</label>
+			{{ item_form.description }}
+		</p>
+
+		<p>
+			<label>Price</label>
+			{{ sells_form.price }}
+		</p>
+
+		<p>
+			<label>Quantity</label>
+			{{ sells_form.quantity }}
+		</p>
+
+		<input type="submit" name="another" value="Add and Another">
+		<input type="submit" name="return" value="Add and Return">
+	</form>
+
 </body>
 
 </html>

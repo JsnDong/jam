@@ -1,6 +1,9 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 from . import views
 
 urlpatterns = [
@@ -13,5 +16,7 @@ urlpatterns = [
 	path('employee_login/', views.employee_login, name='employee_login'),
 	path('<slug:username>_profile/', views.user_profile, name="user_profile"),
 	path('<slug:username>_profile/store/', views.user_store, name="user_store"),
-	path('<slug:username>_profile/store/add', views.add_item, name="Add Item to Store")
-]
+	path('<slug:username>_profile/store/add', views.add_item, name="add_item"),
+	path('<slug:username>_profile/store/drop_<int:itemid>', views.drop_item, name="drop_item")
+	#path('<slug:username>_profile/store/modify_<int:itemid>', views.modify_item, name="modify_item")
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
