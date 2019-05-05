@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import	HttpResponse, HttpResponseRedirect
+from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 
 from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
 from . import models
+
+
 
 def index(request):
 	return render(request, 'index.html', {'account': request.user})
@@ -12,11 +15,19 @@ def index(request):
 def search(request):
 	if request.method == 'POST':
 		query = request.POST.get('query')
+		query = query.replace(" ", "_")
 		return HttpResponseRedirect('/query_' + query)
 	else:
 		return HttpResponseRedirect('/')
 
-#def search_results(request, query):
+def search_results(request, query):
+	query = query.replace("_", " ")
+	query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query))
+	result = list(query_set)
+	
+	return render(request, 'search_results.html', {'account': request.user, 'result' : result, 'search' : query})
+
+#def view_items(request, itemid):
 
 def user_signup(request):
 	if request.method == 'POST':

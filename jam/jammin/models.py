@@ -21,6 +21,9 @@ class Item(models.Model):
 	dept = models.CharField(max_length=255, choices=DEPT_CHOICES, blank=False, default=None)
 	description = models.TextField(blank=True, null=True)
 
+	buys = models.PositiveIntegerField(default=0)
+	views = models.PositiveIntegerField(default=0) 
+
 	def __str__(self):
 		return self.name
 

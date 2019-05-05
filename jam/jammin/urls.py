@@ -10,6 +10,7 @@ urlpatterns = [
 	path('', views.index, name='index'),
 	path('query', views.search, name="search"),
 	path('query_<slug:query>', views.search_results, name='search_results'),
+	path('item_<int:itemid>', views.view_item, name='view_item'),
 	path('signup/', views.user_signup, name='user_signup'),
 	path('login/', views.user_login, name='user_login'),
 	path('logout/', views.account_logout, name='logout'),
