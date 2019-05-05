@@ -139,24 +139,37 @@ def modify_item(request, username, itemid):
 	sells = models.Sells.objects.get(seller=user.userid, item=itemid)
 	if request.method == 'POST':
 		item_form = AddItemForm(request.POST, request.FILES, instance=item)
-				sells_form = SellsForm(request.POST, instance=sells)
-				if item_form.is_valid() and sells_form.is_valid():
-					if not request.POST.get("cancel"):
-						item = item_form.save(commit=False)
-						item.author = request.user.useraccount
-						item.save()
-						sells = sells_form.save(commit=False)
-						sells.seller = user
-						sells.item = item
-						sells.save()
-					if request.POST.get("save"):
-						return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
-			else:
-				item_form = AddItemForm(instance=item)
-				sells_form = SellsForm(instance=sells)
+		sells_form = SellsForm(request.POST, instance=sells)
+		if item_form.is_valid() and sells_form.is_valid():
+			if not request.POST.get("cancel"):
+				item = item_form.save(commit=False)
+				item.author = request.user.useraccount
+				item.save()
+				sells = sells_form.save(commit=False)
+				sells.seller = user
+				sells.item = item
+				sells.save()
+			if request.POST.get("save"):
+				return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
+		else:
+			item_form = AddItemForm(instance=item)
+			sells_form = SellsForm(instance=sells)
 
-			return render(request, "modify_item.html", {'user': user,'item_form': item_form, 'sells_form': sells_form})
+		return render(request, "modify_item.html", {'user': user,'item_form': item_form, 'sells_form': sells_form})
 
-def cart(request):
-	# query_results = Cart.objects.all()
+def user_cart(request, username):
+	# if not request.user.is_authenticated or\
+	# 	   request.user.useraccount.username != username:
+	# 	return HttpResponseRedirect('/')
+	#
+	# user = request.user.useraccount
+	# cart = user.cart.all()
+	# listings = list()
+	# for item in cart:
+	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
+	# 	listing = [item, sells]
+	# 	listings += [listing]
+	#
+	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
+
 	return render(request, 'cart.html')
