@@ -141,3 +141,8 @@ def modify_item(request, username, itemid):
 
 	if request.method == 'POST':
 '''
+#added view for adding and viewing current cards
+def addview_card(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	return render(request, "addview_card.html")
