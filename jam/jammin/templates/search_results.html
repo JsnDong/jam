@@ -3,7 +3,7 @@
 {% block title %}Search Results{% endblock title %}
 
 {% block content %}
-    <div>
+    <div style="width: 100%;padding: 0px 0px 0px 0px;">
         <h2>
             {% if results %}
                 Search Results
@@ -17,18 +17,18 @@
     <div>
         {% for item in result %}
             <br>
-            <div style="width: 100px; height: 100px">
+            <div class = "lists" style="width: 100px; height: 100px">
                 <img src="{{ item.thumbnail.url }}">
             </div>
 
             <div>
-                <div>
+                <div class = "item_name">
                     <a href="item_{{ item.itemid }}">{{ item.name }}</a>
                 </div>
-                <div>
+                <div class = "item_descr">
                     {{ item.description }}
                 </div>
-                <div>
+                <div style = "text-align: right">
                     <a href="">Add to Cart</a>
                 </div>
             </div>

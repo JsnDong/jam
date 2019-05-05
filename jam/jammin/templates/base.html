@@ -2,60 +2,150 @@
 <html>
     <head>
 	   <title>{% block title %}{% endblock title %}</title>
+        <style>
+             h2{
+                color: white;
+             }
+             ul {
+              list-style-type: none;
+              margin: 0;
+              padding: 0px 0px 10px 0px;
+              overflow: hidden;
+              color: white;
+              width: 100%;
+            }
+            a{
+              color: white;
+              align-content: center;
+            }
+
+            li {
+              display: block;
+              text-decoration: none;
+            }
+
+            li a{
+              color: white;
+              align-content: center;
+            }
+
+            .navbar a:hover {
+              background-color: #111;
+            }
+            #logo{
+                color: white;
+                font-size: 300%;
+                width: 100%;
+                font-family: Georgia, Verdana, Segoe, sans-serif;
+            }
+            .top li{
+                float: left;
+                display: inline;
+            }
+            #search_bar{
+                width: 400px;
+                border: 3px solid #333;
+            }
+            .top form{
+                padding: 5px;
+                margin: 15px;
+
+            }
+            .top{
+                background-color: white;
+                width: 100%;
+                display: inline;
+            }
+            .navbar{
+                background-color: #333;
+                padding: 10px 100px 10px 10px;
+            }
+            .navbar li{
+                float: left;
+                padding: 10px 20px 10px 0px;
+                font-size: 120%;
+            }
+            .navbar a{
+                padding: 0px 0px;
+                color: white;
+            }
+            .lists{
+                background-color: #dee3ea;
+                border: 3px solid #b1b6bc;
+            }
+            .item_name{
+                padding: 5px 0px 5px 5px;
+                font-size: 115%;
+            }
+            .item_descr{
+                padding: 5px 0px 5px 5px;
+                color: grey;
+            }
+            form{
+                background-color: #dee3ea;
+                padding: 10px;
+            }
+            .confirm{
+                background-color: #dee3ea;
+                padding: 20px;
+                text-align: center;
+            }
+        </style>
     </head>
 
-    <body>
+    <body style = "background-color: #565656;">
         <header>
             <div>
-                <div>
-                    <h1><a href='/'>Jammin</a></h1>
-                </div>
-                <div>
-                    <form action="/query" method="post">
-                        {% csrf_token %}
-                        <input type="text" name='query' placeholder="Search">
-                        <input type="submit" value="Find">
-                    </form>
-                </div>
-                <br>
-                <div>
+                <ul class="top">
+                    <li>
+                        <a id="logo">Jammin</a>
+                    </li>
+                    <li>
+                        <form action="/query" method="post">
+                            {% csrf_token %}
+                            <input type="text" name='query' placeholder="Search" id = "search_bar">
+                            <input type="submit" value="Find">
+                        </form>
+                    </li>
+                </ul>
+                <ul class = "navbar">
                     {% if account.is_authenticated %}
-                        <div>
-                            Hello, <a href="{{ account.useraccount.username }}_profile/">{{ account.name }}</a>
-                        </div>
+                        <li>
+                            <a>
+                                Hello, <a href="{{ account.useraccount.username }}_profile/">{{ account.name }}</a>
+                            </a>
+                        </li>
 
-                        <div>
+                        <li>
                             <a href="/logout">Log Out</a>
-                        </div>
+                        </li>
                     {% else %}
-                        <div>
+                        <li>
                             <a href="/login">Login</a> or <a href="/signup">Sign Up</a>
-                        </div>
-                        <div>
-                            <a href="/signup">Sign Up</a>
-                        </div>
+                        </li>
                     {% endif %}
-                    <div>
-                        Cart
-                    </div>
-                </div>
+                    <li>
+                        <a href="/cart">Cart</a>
+                    </li>
+                    <li>
+                        <a href='/' >Home</a>
+                    </li>
+                </ul>
             </div>
         </header>
-
-        <br>
         {% block content %}
         {% endblock content %}
         <br>
 
         <footer>
-            <div>
-                <div>
+            <ul class = "navbar">
+                <li >
                     <a href="/employee_login">Employees</a>
-                </div>
-                <div>
+                </li>
+                <li>
                     <a href="/employee_app">Careers</a>
-                </div>
-            </div>
+                </li>
+            </ul>
         </footer>
     </body>
 </html>

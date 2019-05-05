@@ -9,6 +9,7 @@ from . import views
 urlpatterns = [
 	path('', views.index, name='index'),
 	path('query', views.search, name="search"),
+	path('<slug:username>_profile/query_<slug:query>', views.search_results, name='search_results'),
 	path('query_<slug:query>', views.search_results, name='search_results'),
 	path('item_<int:itemid>', views.view_item, name='view_item'),
 	path('signup/', views.user_signup, name='user_signup'),
@@ -19,6 +20,7 @@ urlpatterns = [
 	path('employee_login/', views.employee_login, name='employee_login'),
 	path('<slug:username>_profile/', views.user_profile, name="user_profile"),
 	path('<slug:username>_profile/store/', views.user_store, name="user_store"),
+	path('cart/', views.user_cart, name='cart'),
 	path('<slug:username>_profile/store/add', views.add_item, name="add_item"),
 	path('<slug:username>_profile/store/drop_<int:itemid>', views.drop_item, name="drop_item"),
 	path('<slug:username>_profile/store/modify_<int:itemid>', views.modify_item, name="modify_item")

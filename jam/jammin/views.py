@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 
 from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
 from . import models
@@ -22,7 +23,9 @@ def search(request):
 
 def search_results(request, query):
 	query = query.replace("_", " ")
-	query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query))
+	query_set = models.Item.objects.filter(Q(name__icontains = query) |\
+										   Q(dept__icontains = query) |\
+										   Q(description__icontains = query))
 	result = list(query_set)
 	
 	return render(request, 'search_results.html', {'account': request.user, 'result' : result, 'search' : query})
@@ -114,10 +117,6 @@ def user_store(request, username):
 	return render(request, "user_store.html", {'account': request.user, 'listings':listings})
 
 def add_item(request, username):
-	if not request.user.is_authenticated or\
-		   request.user.useraccount.username != username:
-		return HttpResponseRedirect('/')
-
 	if request.method == 'POST':
 		item_form = AddItemForm(request.POST, request.FILES)
 		sells_form = SellsForm(request.POST)
@@ -175,8 +174,28 @@ def modify_item(request, username, itemid):
 				sells.save()
 			if request.POST.get("save"):
 				return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
-	else:
-		item_form = AddItemForm(instance=item)
-		sells_form = SellsForm(instance=sells)
+		else:
+			item_form = AddItemForm(instance=item)
+			sells_form = SellsForm(instance=sells)
 
-	return render(request, "modify_item.html", {'user': user,'item_form': item_form, 'sells_form': sells_form})
+		return render(request, "modify_item.html", {'user': user,'item_form': item_form, 'sells_form': sells_form})
+
+def user_cart(request, username):
+	# if not request.user.is_authenticated or\
+	# 	   request.user.useraccount.username != username:
+	# 	return HttpResponseRedirect('/')
+	#
+	# user = request.user.useraccount
+	# cart = user.cart.all()
+	# listings = list()
+	# for item in cart:
+	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
+	# 	listing = [item, sells]
+	# 	listings += [listing]
+	#
+	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
+
+	return render(request, 'cart.html')
+
+def add_to_cart(request, username, itemid):
+	return render(request, 'cart.html')

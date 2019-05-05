@@ -9,31 +9,30 @@
 
 	<div>
 		<form action="add">
-			<input type="submit" value="add">
+			<input type="submit" value="Add Item">
 		</form>
 	</div>
 
 	<div>
 		{% for listing in listings %}
-			<br>
-			<div>
+			<div class = "lists">
 				<div style="width: 100px; height: 100px">
 					<img src="{{ listing.0.image.url }}">
 				</div>
 				<div>
-					<div>
+					<div class = "item_name">
 						{{ listing.0.name }}
 					</div>
 
-					<div>
+					<div class = "item_descr">
 						<label>Quantiy: </label>{{ listing.1.quantity}}
-						<label>Price: </label>{{ listing.1.price}}
+						<label>Price: $</label>{{ listing.1.price}}
 					</div>
 
-					<div>
+					<div class = "item_descr">
 						{{ listing.0.description }}
 					</div>
-					<div>
+					<div class = "navbar">
 						<a href="drop_{{listing.0.itemid}}">Delete</a>
 						<a href="modify_{{listing.0.itemid}}">Edit</a>
 					</div>

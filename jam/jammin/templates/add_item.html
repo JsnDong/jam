@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>Store</title>
-</head>
+{% block title%}Add to Store{% endblock title%}
 
+{% block content %}
 <body>
 	<h2>Store: Add Item</h2>
 
@@ -46,7 +44,4 @@
 		<input type="submit" name="another" value="Add and Another">
 		<input type="submit" name="return" value="Add and Return">
 	</form>
-
-</body>
-
-</html>
+{%endblock content%}

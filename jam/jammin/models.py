@@ -26,27 +26,41 @@ class Item(models.Model):
 
 	def __str__(self):
 		return self.name
-
 	def save(self):
-		output = BytesIO()
-		pil = Image.open(self.image)
+			output = BytesIO()
+			pil = Image.open(self.image)
 
-		pil.thumbnail((500, 500))
-		pil.save(output, format='PNG', quality=100)
-		output.seek(0)
-		image_name = os.path.basename(self.image.name).split('.')[0] + '.png'
-		self.image = InMemoryUploadedFile(output, 'ImageField',\
-									    image_name, 'image/png',\
-									    sys.getsizeof(output), None)
+			pil.thumbnail((500, 500))
+			pil.save(output, format='PNG', quality=100)
+			output.seek(0)
+			image_name = os.path.basename(self.image.name).split('.')[0] + '.png'
+			self.image = InMemoryUploadedFile(output, 'ImageField',\
+											image_name, 'image/png',\
+											sys.getsizeof(output), None)
 
-		pil.thumbnail((100, 100))
-		pil.save(output, format='PNG', quality=100)
-		output.seek(0)
-		image_name = os.path.basename(self.image.name).split('.')[0] + '_thumbnail.png'
-		self.thumbnail = InMemoryUploadedFile(output, 'ImageField',\
-									    image_name, 'image/png',\
-									    sys.getsizeof(output), None)
-		super(Item, self).save()
+			pil.thumbnail((100, 100))
+			pil.save(output, format='PNG', quality=100)
+			output.seek(0)
+			image_name = os.path.basename(self.image.name).split('.')[0] + '_thumbnail.png'
+			self.thumbnail = InMemoryUploadedFile(output, 'ImageField',\
+											image_name, 'image/png',\
+											sys.getsizeof(output), None)
+			super(Item, self).save()
+class CartHas(models.Model):
+	user = models.ForeignKey('UserAccount', models.CASCADE,
+								null=False)
+	item = models.ForeignKey('Item', models.CASCADE, blank=True,
+								null=True)
+	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
+	quantity = models.IntegerField(blank=True, null=True,
+								   validators=[MinValueValidator(0)])
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [user, item, quantity]])
+class Cart(models.Model):
+	cart_has = models.ManyToManyField(Item, through='CartHas')
+	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
+	def __str__(self):
+		return str(self.cart_has)+self.total
 
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
@@ -88,8 +102,8 @@ class UserAccount(models.Model):
 							  validators=[MinValueValidator(100000000),
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
-
-	store = models.ManyToManyField('Item', through='Sells')
+	store = models.ManyToManyField(Item, through='Sells')
+	cart = models.ManyToManyField(Cart, through='CartHas')
 
 	def __str__(self):
 		return str(self.userid)
