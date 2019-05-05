@@ -11,8 +11,13 @@
                     <h1><a href='/'>Jammin</a></h1>
                 </div>
                 <div>
-                    Search Bar Goes Here
+                    <form action="/query" method="post">
+                        {% csrf_token %}
+                        <input type="text" name='query' placeholder="Search">
+                        <input type="submit" value="Find">
+                    </form>
                 </div>
+                <br>
                 <div>
                     {% if account.is_authenticated %}
                         <div>
