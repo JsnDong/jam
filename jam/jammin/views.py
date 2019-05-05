@@ -9,6 +9,15 @@ from . import models
 def index(request):
 	return render(request, 'index.html', {'account': request.user})
 
+def search(request):
+	if request.method == 'POST':
+		query = request.POST.get('query')
+		return HttpResponseRedirect('/query_' + query)
+	else:
+		return HttpResponseRedirect('/')
+
+#def search_results(request, query):
+
 def user_signup(request):
 	if request.method == 'POST':
 		account_form = AccountCreationForm(request.POST)
