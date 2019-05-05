@@ -1,7 +1,24 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import Account, UserAccount, EmployeeApp
+from .models import Item, Account, UserAccount, Sells, EmployeeApp
+
+class AddItemForm(forms.ModelForm):
+	class Meta:
+		model = Item
+		fields = ('image', 'name', 'dept', 'description')
+
+	def save(self, commit=True):
+		item = super().save(commit=False)
+		if commit:
+			item.save()
+		return item
+
+	def clean_dept(self):
+		dept = self.cleaned_data['dept']
+		if dept == None:
+			raise forms.ValidationError('Select a category')
+		return dept
 
 class AccountCreationForm(forms.ModelForm):
 	password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -64,3 +81,14 @@ class LoginForm(forms.Form):
 class EmployeeLoginForm(forms.Form):
 	employee_id = forms.CharField(label='Employee ID')
 	password = forms.CharField(widget=forms.PasswordInput())
+
+class SellsForm(forms.ModelForm):
+	class Meta:
+		model = Sells
+		fields = ('price', 'quantity')
+
+	def save(self, commit=True):
+		sells = super().save(commit=False)
+		if commit:
+			sells.save()
+		return sells

@@ -9,10 +9,25 @@
 	<h2>Store</h2>
 
 	<p>
-		<form action="add" add_item/">
+		<form action="add">
 			<input type="submit" value="add">
 		</form>
 	</p>
+
+	<p>
+		{% for listing in listings %}
+			<p>
+				<div style="width: 100px; height: 100px">
+				<img src="{{ listing.0.image.url }}">
+				</div>
+				{{ listing.0.name }}
+				{{ listing.0.description }}
+				{{ listing.1.quantity}}
+				{{ listing.1.price}}
+				<a href="drop_{{item.itemid}}">Delete</a>
+			</p>
+		{% endfor %}
+	<p>
 </body>
 
 </html>
