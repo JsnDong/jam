@@ -21,7 +21,7 @@ def search(request):
 def search_results(request, query):
 	if request.method == 'GET':
 		query = query.replace("_", " ")
-		query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query))
+		query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query) | Q(description__icontains = query))
 		result = list()
 		for item in query_set:
 			temp = [item.name, item.description]
