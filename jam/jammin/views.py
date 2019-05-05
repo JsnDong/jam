@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import	HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 
 from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
 from . import models
@@ -12,12 +13,20 @@ def index(request):
 def search(request):
 	if request.method == 'POST':
 		query = request.POST.get('query')
+		query = query.replace(" ", "_")
 		return HttpResponseRedirect('/query_' + query)
 	else:
 		return HttpResponseRedirect('/')
 
-#def search_results(request, query):
-
+def search_results(request, query):
+	if request.method == 'GET':
+		query = query.replace("_", " ")
+		query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query))
+		result = list()
+		for item in query_set:
+			temp = [item.name, item.description]
+			result += [temp]
+	return render(request, 'search_results.html', {'result' : result, 'search' : query})
 def user_signup(request):
 	if request.method == 'POST':
 		account_form = AccountCreationForm(request.POST)

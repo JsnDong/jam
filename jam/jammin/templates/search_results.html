@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Search Results For: {{search}}</h2>
+<div>
+    {% for item in result %}
+        <br>
+        <div>
+            <div>
+                <div>
+                    {{ item.0 }}
+                </div>
+
+                <div>
+<!--                    <label>Price: </label>{{ listing.1.price}}-->
+                </div>
+
+                <div>
+                    {{ item.1 }}
+                </div>
+                <div>
+                    <input type="submit" value="Add to Cart">
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{%endblock content%}
