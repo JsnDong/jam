@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from .managers import AccountManager, EmployeeManager
 from .choices import DEPT_CHOICES
 
+from .validators import regex_validators
+
 from PIL import Image
 from io import BytesIO
 import sys, os
@@ -132,11 +134,12 @@ class EmployeeApp(models.Model):
 
 	def __str__(self):
 		return self.email
+
 class Card(models.Model):
-	card_number = models.CharField(max_length=16, unique=True, blank=False)
+	card_number = models.CharField(max_length=20, unique=True, blank=False, validators=[regex_validators])
 	expiry_date = models.DateField(blank =False, null=True)
-	cvn = models.IntegerField(default = 000,blank=False,validators=[MinValueValidator(100),
-										 	  MaxValueValidator(999)])
+	cvn = models.CharField(max_length=200, blank= False)
+
 	cardholder = models.CharField(max_length=200, unique=True, blank =False, null=True)
 	user_account = models.ForeignKey('UserAccount', on_delete=models.CASCADE, related_name ="useracc_id")
 	useraccounts = models.ManyToManyField(UserAccount)

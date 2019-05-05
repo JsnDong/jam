@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.http import	HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
+from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm, AddPaymentOption
 from . import models
 
 def index(request):
@@ -145,4 +145,17 @@ def modify_item(request, username, itemid):
 def addview_card(request, username):
 	if not request.user.is_authenticated:
 		return HttpResponseRedirect('/')
-	return render(request, "addview_card.html")
+
+	if request.method == 'POST':
+		card_form = AddPaymentOption(request.POST, request.FILES)
+		if card_form.is_valid():
+			user = request.user.useraccount
+			if not request.POST.get("cancel"):
+				card = card_form.save(commit=False)
+				card.user_account = request.user.useraccount
+				card.save()
+
+	else:
+		card_form = AddPaymentOption()
+
+	return render(request, "addview_card.html", {'card_form': card_form})

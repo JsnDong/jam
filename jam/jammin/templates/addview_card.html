@@ -1,3 +1,39 @@
+<!DOCTYPE html>
+<html>
+
 <head>
-	<title>Your Cards</title>
+	<title>Your Payment Options</title>
 </head>
+
+<body>
+	<h2>Add Card</h2>
+
+	<form action="" enctype="multipart/form-data" method="post">
+		{% csrf_token %}
+
+		<p>
+			<label>Card Number</label>
+			{{ card_form.card_number }}
+		</p>
+
+		<p>
+			<label>Expiry Date</label>
+			{{ card_form.expiry_date }}
+		</p>
+
+		<p>
+			<label>Security Code</label>
+			{{ card_form.cvn }}
+		</p>
+
+		<p>
+			<label>Card Holder</label>
+			{{ card_form.cardholder }}
+		</p>
+
+		<input type="submit" value="Submit">
+	</form>
+
+</body>
+
+</html>
