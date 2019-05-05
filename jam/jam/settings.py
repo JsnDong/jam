@@ -77,6 +77,9 @@ WSGI_APPLICATION = 'jam.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        'OPTIONS' : {
+        'options' : '-c search_path=django,mel'
+            },
         'NAME': 'JAM',
         'USER': 'JAM',
         'PASSWORD' : 'ptisdaddy',

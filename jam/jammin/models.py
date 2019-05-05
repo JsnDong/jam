@@ -13,6 +13,22 @@ class Item(models.Model):
 	def __str__(self):
 		return self.name
 
+class CartHas(models.Model):
+	user = models.ForeignKey('UserAccount', models.CASCADE,
+								null=False)
+	item = models.ForeignKey('Item', models.CASCADE, blank=True,
+								null=True)
+	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
+	quantity = models.IntegerField(blank=True, null=True,
+								   validators=[MinValueValidator(0)])
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [user, item, quantity]])
+class Cart(models.Model):
+	cart_has = models.ManyToManyField(Item, through='CartHas')
+	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
+	def __str__(self):
+		return str(self.cart_has)+self.total
+
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
 	name = models.CharField(max_length=255, blank=False)
@@ -55,7 +71,7 @@ class UserAccount(models.Model):
 	username = models.CharField(max_length=255, unique=True)
 
 	store = models.ManyToManyField(Item, through='Sells')
-
+	cart = models.ManyToManyField(Cart, through='CartHas')
 	#objects = UserManager()
 
 	def __str__(self):

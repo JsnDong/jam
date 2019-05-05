@@ -86,3 +86,6 @@ def add_item(request, username):
 		return HttpResponseRedirect('/')
 
 	#if request.method='POST':
+def cart(request):
+	# query_results = Cart.objects.all()
+	return render(request, 'cart.html')
