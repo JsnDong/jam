@@ -26,7 +26,7 @@ def search_results(request, query):
 		for item in query_set:
 			temp = [item.name, item.description]
 			result += [temp]
-	return render(request, 'search_results.html', {'result' : result, 'search' : query})
+	return render(request, 'search_results.html', {'result' : result, 'search' : query, 'account': request.user})
 def user_signup(request):
 	if request.method == 'POST':
 		account_form = AccountCreationForm(request.POST)
@@ -190,4 +190,7 @@ def user_cart(request, username):
 	#
 	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
 
+	return render(request, 'cart.html')
+
+def add_to_cart(request, username, itemid):
 	return render(request, 'cart.html')
