@@ -1,17 +1,15 @@
 from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
 
-from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm
-from . import models
-
-
+from . import models, forms
 
 def index(request):
-	return render(request, 'index.html', {'account': request.user})
+	most_viewed = list(models.Item.objects.all().order_by('-views'))[:10]
+
+	return render(request, 'index.html', {'account': request.user, 'most_viewed': most_viewed})
 
 def search(request):
 	if request.method == 'POST':
@@ -30,12 +28,56 @@ def search_results(request, query):
 	
 	return render(request, 'search_results.html', {'account': request.user, 'result' : result, 'search' : query})
 
-#def view_items(request, itemid):
+def view_item(request, itemid):
+	item = models.Item.objects.get(itemid=itemid)
+
+	if item == None:
+		raise Http404
+
+	item.views += 1
+	item.save()
+
+	listings = list(models.Sells.objects.filter(item=itemid))
+
+	return render(request, 'view_item.html', {'account': request.user, 'item': item, 'listings': listings})
+
+def add_listing(request, itemid):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+
+	item = models.Item.objects.get(itemid=itemid)
+	if item == None:
+		raise Http404
+
+	try:
+		listing = models.Sells.objects.get(seller=request.user.useraccount, item=itemid)
+	except:
+		listing = None
+
+	if listing and request.method == 'POST':
+		sells_form = forms.SellsForm(request.POST, instance=listing)
+		if sells_form.is_valid():
+			sells_form.save()
+			return HttpResponseRedirect(reverse("user_store", kwargs={'username': request.user.useraccount.username}))
+	elif not listing and request.method == 'POST':
+		sells_form = forms.SellsForm(request.POST)
+		if sells_form.is_valid:
+			listing = sells_form.save(commit=False)
+			listing.seller = request.user.useraccount
+			listing.item = item
+			listing.save()
+			return HttpResponseRedirect(reverse("user_store", kwargs={'username': request.user.useraccount.username}))
+	elif listing:
+		sells_form = forms.SellsForm(instance=listing)
+	else:
+		sells_form = forms.SellsForm(instance=listing)
+
+	return render(request, 'add_listing.html', {'account': request.user, 'item': item, 'sells_form': sells_form})
 
 def user_signup(request):
 	if request.method == 'POST':
-		account_form = AccountCreationForm(request.POST)
-		user_form = UserSignUpForm(request.POST)
+		account_form = forms.AccountCreationForm(request.POST)
+		user_form = forms.UserSignUpForm(request.POST)
 		if account_form.is_valid() and user_form.is_valid():
 			account = account_form.save()
 			user = user_form.save(commit=False)
@@ -43,14 +85,14 @@ def user_signup(request):
 			user.save()
 			return HttpResponseRedirect('/')
 	else:
-		account_form = AccountCreationForm()
-		user_form = UserSignUpForm()
+		account_form = forms.AccountCreationForm()
+		user_form = forms.UserSignUpForm()
 
 	return render(request, 'user_signup.html', {'account_form': account_form, 'user_form': user_form})
 
 def user_login(request):
 	if request.method == 'POST':
-		login_form = LoginForm(request.POST)
+		login_form = forms.LoginForm(request.POST)
 		if login_form.is_valid():
 			email = request.POST['email']
 			password = request.POST['password']
@@ -61,7 +103,7 @@ def user_login(request):
 			else:
 				return HttpResponseRedirect('/login')
 	else:
-		login_form = LoginForm()
+		login_form = forms.LoginForm()
 
 	return render(request, 'login.html', {'login_form': login_form})
 
@@ -71,13 +113,13 @@ def account_logout(request):
 
 def employee_app(request):
 	if request.method == 'POST':
-		form = EmployeeAppForm(request.POST, request.FILES)
+		form = forms.EmployeeAppForm(request.POST, request.FILES)
 		if form.is_valid():
 			candidate = form.save(commit=False)
 			candidate.save()
 			return HttpResponseRedirect('/app_confirm')
 	else:
-		form = EmployeeAppForm()
+		form = forms.EmployeeAppForm()
 
 	return render(request, 'employee_app.html', {'form': form})
 
@@ -86,20 +128,18 @@ def app_confirm(request):
 
 def employee_login(request):
 	if request.method == 'POST':
-		form = EmployeeLoginForm(request.POST)
+		form = forms.EmployeeLoginForm(request.POST)
 		if form.is_valid():
 			return HttpResponseRedirect('/')
 	else:
-		form = EmployeeLoginForm()
+		form = forms.EmployeeLoginForm()
 
 	return render(request, 'employee_login.html', {'form': form})
 
 def user_profile(request, username):
-	if not request.user.is_authenticated or\
-		   request.user.useraccount.username != username:
-		return HttpResponseRedirect('/')
+	profile = models.UserAccount.objects.get(username=username)
 
-	return render(request, "user_profile.html", {'account': request.user})
+	return render(request, "user_profile.html", {'account': request.user, 'profile': profile})
 
 def user_store(request, username):
 	if not request.user.is_authenticated or\
@@ -118,8 +158,8 @@ def user_store(request, username):
 
 def add_item(request, username):
 	if request.method == 'POST':
-		item_form = AddItemForm(request.POST, request.FILES)
-		sells_form = SellsForm(request.POST)
+		item_form = forms.AddItemForm(request.POST, request.FILES)
+		sells_form = forms.SellsForm(request.POST)
 		if item_form.is_valid() and sells_form.is_valid():
 			user = request.user.useraccount
 			if not request.POST.get("cancel"):
@@ -135,8 +175,8 @@ def add_item(request, username):
 			else:
 				return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
 	else:
-		item_form = AddItemForm()
-		sells_form = SellsForm()
+		item_form = forms.AddItemForm()
+		sells_form = forms.SellsForm()
 
 	return render(request, "add_item.html", {'item_form': item_form, 'sells_form': sells_form})
 
@@ -161,25 +201,19 @@ def modify_item(request, username, itemid):
 	item = models.Item.objects.get(author=user.userid, itemid=itemid)
 	sells = models.Sells.objects.get(seller=user.userid, item=itemid)
 	if request.method == 'POST':
-		item_form = AddItemForm(request.POST, request.FILES, instance=item)
-		sells_form = SellsForm(request.POST, instance=sells)
+		item_form = forms.AddItemForm(request.POST, request.FILES, instance=item)
+		sells_form = forms.SellsForm(request.POST, instance=sells)
 		if item_form.is_valid() and sells_form.is_valid():
-			if not request.POST.get("cancel"):
-				item = item_form.save(commit=False)
-				item.author = request.user.useraccount
-				item.save()
-				sells = sells_form.save(commit=False)
-				sells.seller = user
-				sells.item = item
-				sells.save()
-			if request.POST.get("save"):
-				return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
-		else:
-			item_form = AddItemForm(instance=item)
-			sells_form = SellsForm(instance=sells)
+			item_form.save()
+			sells_form.save()
+			return HttpResponseRedirect(reverse('user_store', kwargs={'username': user.username}))
+	else:
+		item_form = forms.AddItemForm(instance=item)
+		sells_form = forms.SellsForm(instance=sells)
 
-		return render(request, "modify_item.html", {'user': user,'item_form': item_form, 'sells_form': sells_form})
+	return render(request, "modify_item.html", {'account': request.user,'item_form': item_form, 'sells_form': sells_form})
 
+'''
 def user_cart(request, username):
 	# if not request.user.is_authenticated or\
 	# 	   request.user.useraccount.username != username:
@@ -199,3 +233,4 @@ def user_cart(request, username):
 
 def add_to_cart(request, username, itemid):
 	return render(request, 'cart.html')
+'''

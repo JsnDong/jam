@@ -17,11 +17,11 @@
 		{% for listing in listings %}
 			<div class = "lists">
 				<div style="width: 100px; height: 100px">
-					<img src="{{ listing.0.image.url }}">
+					<img src="{{ listing.0.thumbnail.url }}">
 				</div>
 				<div>
 					<div class = "item_name">
-						{{ listing.0.name }}
+						<a href="/item_{{listing.0.itemid}}">{{ listing.0.name }}</a>
 					</div>
 
 					<div class = "item_descr">

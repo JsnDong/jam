@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 
 from .managers import AccountManager, EmployeeManager
@@ -26,26 +27,32 @@ class Item(models.Model):
 
 	def __str__(self):
 		return self.name
+
 	def save(self):
-			output = BytesIO()
-			pil = Image.open(self.image)
+		thumbnail_copy = ContentFile(self.image.read())
+		thumbnail_output = BytesIO()
+		thumbnail_pil = Image.open(thumbnail_copy)
+		thumbnail_pil.thumbnail((100, 100))
+		thumbnail_pil.save(thumbnail_output, format='PNG', quality=100)
+		thumbnail_output.seek(0)
+		thumbnail_name = os.path.basename(self.image.name).split('.')[0] + '_thumbnail.png'
+		self.thumbnail = InMemoryUploadedFile(thumbnail_output, 'ImageField',\
+											  thumbnail_name, 'image/png',\
+											  sys.getsizeof(thumbnail_output), None)
 
-			pil.thumbnail((500, 500))
-			pil.save(output, format='PNG', quality=100)
-			output.seek(0)
-			image_name = os.path.basename(self.image.name).split('.')[0] + '.png'
-			self.image = InMemoryUploadedFile(output, 'ImageField',\
+		image_output = BytesIO()
+		image_pil = Image.open(self.image)
+		image_pil.thumbnail((500, 500))
+		image_pil.save(image_output, format='PNG', quality=100)
+		image_output.seek(0)
+		image_name = os.path.basename(self.image.name).split('.')[0] + '.png'
+		self.image = InMemoryUploadedFile(image_output, 'ImageField',\
 											image_name, 'image/png',\
-											sys.getsizeof(output), None)
+											sys.getsizeof(image_output), None)
 
-			pil.thumbnail((100, 100))
-			pil.save(output, format='PNG', quality=100)
-			output.seek(0)
-			image_name = os.path.basename(self.image.name).split('.')[0] + '_thumbnail.png'
-			self.thumbnail = InMemoryUploadedFile(output, 'ImageField',\
-											image_name, 'image/png',\
-											sys.getsizeof(output), None)
-			super(Item, self).save()
+		super(Item, self).save()
+
+'''
 class CartHas(models.Model):
 	user = models.ForeignKey('UserAccount', models.CASCADE,
 								null=False)
@@ -56,11 +63,13 @@ class CartHas(models.Model):
 								   validators=[MinValueValidator(0)])
 	def __str__(self):
 		return ", ".join([str(detail) for detail in [user, item, quantity]])
+
 class Cart(models.Model):
 	cart_has = models.ManyToManyField(Item, through='CartHas')
 	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
 	def __str__(self):
 		return str(self.cart_has)+self.total
+'''
 
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
@@ -103,7 +112,7 @@ class UserAccount(models.Model):
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
 	store = models.ManyToManyField(Item, through='Sells')
-	cart = models.ManyToManyField(Cart, through='CartHas')
+	#cart = models.ManyToManyField(Cart, through='CartHas')
 
 	def __str__(self):
 		return str(self.userid)

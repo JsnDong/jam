@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title%}{{ item.name }}{% endblock title%}
+
+{% block content %}
+	<div>
+		<div>
+			<div style="width: 500px; height: 500px;">
+				<img src="{{ item.image.url }}" style="display: block;margin: auto;">
+	    	</div>
+
+	    	<div class="lists">
+	    		<div>
+	    			{{ item.name }}
+	    		</div>
+
+	    		<div>
+	    			{{ item.description }}
+	    		</div>
+	    	</div>	
+		</div>
+
+		<div>
+			<div>
+	    		<a href="add_listing">Add a listing</a>
+	    	</div>
+	    	{% for listing in listings %}
+	    		<div>
+	    			<div>
+	    				<label>Seller: </label><a href="/{{listing.seller.username}}_profile">{{ listing.seller.username }}</a>
+						<label>Price: </label>{{ listing.price }}
+						<label>Quantity: </label>{{ listing.quantity }}
+						<a href="/cart">Add to Cart</a>
+					</div>
+	    		</div>
+			{% endfor %}
+    	</div>
+	</div>
+{% endblock content %}

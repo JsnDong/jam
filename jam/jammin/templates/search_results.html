@@ -5,12 +5,7 @@
 {% block content %}
     <div style="width: 100%;padding: 0px 0px 0px 0px;">
         <h2>
-            {% if results %}
-                Search Results
-            {% else %}
-                No Results
-            {% endif%}
-            For: "{{search}}"
+            Search Results For: "{{search}}"
         </h2>
     </div>
     
@@ -32,6 +27,8 @@
                     <a href="">Add to Cart</a>
                 </div>
             </div>
+        {% empty %}
+            No results found
         {% endfor %}
     </div>
 {%endblock content%}

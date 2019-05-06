@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title%}Create Listing{% endblock title%}
+
+{% block content %}
+	<div>
+		<div>
+			<div class = "lists" style="width: 100px; height: 100px">
+				<img src="{{ item.thumbnail.url }}">
+	    	</div>
+
+	    	<div>
+	    		{{ item.name }}
+	    	</div>
+
+	    	<div>
+	    		{{ item.description }}
+	    	</div>
+		</div>
+
+		<div>
+			<form action="" method="post">
+				{% csrf_token %}
+				<div>
+					<label>Price</label>{{ sells_form.price }}
+				</div>
+
+				<div>
+					<label>Quantity</label>{{ sells_form.quantity }}
+				</div>
+
+				<div>
+					<input type="submit" name="return" value="Create">
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock content %}

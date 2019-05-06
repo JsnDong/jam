@@ -1,2 +1,25 @@
 {% extends "base.html" %}
+
 {% block title%}Jammin'{% endblock title%}
+
+{% block content %}
+	<div>
+		<div name="mosts">
+			<div name="most_viewed">
+				<h3>Most Popular</h3>
+				<ul class="navbar">
+					{% for item in most_viewed %}
+						<li>
+							<div style="width: 100px; height: 100px;">
+								<a href="item_{{ item.itemid }}"><img src="{{ item.thumbnail.url }}"></a>
+							</div>
+							<div>
+								<a href="item_{{ item.itemid }}">{{ item.name }}</a>
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+{% endblock content%}

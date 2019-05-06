@@ -4,7 +4,14 @@
 
 {% block content %}
 	<div>
-		<h2>Profile</h2>
+		<h2>
+			{% if profile.username == account.useraccount.username %}
+				My
+			{% else %}
+				{{ profile.username }}{% ifequal profile.username|slice:"-1:" "s" %}'{% else %}'s{% endifequal %}
+			{% endif %}
+			Profile
+		</h2>
 	</div>
 
 	<div>
