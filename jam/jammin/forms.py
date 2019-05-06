@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import Item, Account, UserAccount, Sells, EmployeeApp, Card
+from .models import Item, Account, UserAccount, Sells, EmployeeApp, Card, Cart
 
 class AddItemForm(forms.ModelForm):
 	class Meta:
@@ -102,3 +102,19 @@ class SellsForm(forms.ModelForm):
 		if commit:
 			sells.save()
 		return sells
+class AddToCart(forms.ModelForm):
+	class Meta:
+		model = Cart
+		fields = ('cart_has', 'total')
+
+	def save(self, commit=True):
+		item = super().save(commit=False)
+		if commit:
+			item.save()
+		return item
+
+	def clean_dept(self):
+		dept = self.cleaned_data['dept']
+		if dept == None:
+			raise forms.ValidationError('Select a category')
+		return dept

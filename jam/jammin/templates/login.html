@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-	<title>Login</title>
-</head>
-
-<body>
+{% extends "base.html" %}
+{%block content%}
     <h2>Login</h2>
 
     <p>
@@ -14,7 +8,7 @@
         {% endif %}
     </p>
 
-	<form action="" method="POST">
+	<form action="" method="POST" class = "form_sty">
 		{% csrf_token %}
 		<p>
             <label>Email</label>
@@ -27,6 +21,5 @@
             {{ login_form.password }}
         </p>
         <input type="submit" value="Login">
-</body>
-
-</html>
+    </form>
+{%endblock content%}

@@ -1,24 +1,21 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>Profile</title>
-</head>
+{% block title%}Profile{% endblock title%}
 
-<body>
-	<h2>Profile</h2>
+{% block content %}
+	<div>
+		<h2>Profile</h2>
+	</div>
 
-	<p>
+	<div>
 		<a href="store/">Your Store</a>
-	</p>
-
+	</div>
 	<p>
-		<a href="payment/">View/Edit Payment Methods</a>
+		<a href="payment/">Your Payment Methods</a>
 	</p>
 
 	<p>
 		<a href="/logout">Log Out</a>
 	</p>
-</body>
 
-</html>
+{%endblock content%}

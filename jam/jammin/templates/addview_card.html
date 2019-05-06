@@ -1,39 +1,107 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>Your Payment Options</title>
-</head>
+{% block title%}Payment{% endblock title%}
 
-<body>
-	<h2>Add Card</h2>
+{% block content %}
 
-	<form action="" enctype="multipart/form-data" method="post">
-		{% csrf_token %}
+	<div>
+		<h2>Your Cards</h2>
+	</div>
 
-		<p>
-			<label>Card Number</label>
-			{{ card_form.card_number }}
-		</p>
+	<div>
+		{% if yourCardsList %}
+		<div>
+			{% for Card in yourCardsList %}
+			<div class = "lists">
+				<div style="float: left; width: 25%;">
+					<ul>
+						<li>
+							<div class = "cardholder">
+								{{ Card.cardholder }}
+							</div>
+						</li>
+					</ul>
+				</div>
 
-		<p>
-			<label>Expiry Date</label>
-			{{ card_form.expiry_date }}
-		</p>
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "card_number">
+										{{ Card.card_number }}
+								</div>
+							</li>
+						</ul>
+				</div>
 
-		<p>
-			<label>Security Code</label>
-			{{ card_form.cvn }}
-		</p>
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "navbar">
+										<a href="drop_{{Card.id}}">Delete</a>
+								</div>
+							</li>
+						</ul>
+				</div>
+				<div style="float: right; width: 25%;">
+						<ul>
+							<li>
+								<div class = "navbar">
+										<a href="modify_{{Card.card_id}}">Edit</a>
+								</div>
+							</li>
+						</ul>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% else %}
+		<p>You have no saved Payment Methods.</p>
+		<p> {{myuser.useraccount.userid}} </p>
+		{% endif %}
+	</div>
+	<style>
+		.hidden{
+			display: none;
+		}
+	</style>
 
-		<p>
-			<label>Card Holder</label>
-			{{ card_form.cardholder }}
-		</p>
+	<script type="text/javascript">
+		function showHide(){
+			var button = document.getElementById("formButton");
+			var hiddeninputs = document.getElementsByClassName("hidden");
 
-		<input type="submit" value="Submit">
-	</form>
+			for(var i = 0; i != hiddeninputs.length; i++){
+				hiddeninputs[i].style.display = "block";
+			}
+		}
+	</script>
 
-</body>
-
-</html>
+	<button type="button" id="formButton" onclick="showHide()">Add A Card </button>
+	<div>
+			<form id="addcard" action="" enctype="multipart/form-data" method="post">
+				{% csrf_token %}
+	
+				<p class="hidden">
+					<label>Card Number:</label>
+					{{ card_form.card_number }}
+				</p>
+	
+				<p class="hidden">
+					<label>Expiry Date:</label>
+					{{ card_form.expiry_date }}
+				</p>
+	
+				<p class="hidden">
+					<label>Security Code:</label>
+					{{ card_form.cvn }}
+				</p>
+	
+				<p class="hidden">
+					<label>Card Holder:</label>
+					{{ card_form.cardholder }}
+				</p>
+	
+				<input class="hidden" type="submit" name="addedcard" value="Add Card">
+			</form>
+		</div>
+{% endblock content %}

@@ -1,33 +1,43 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>Store</title>
-</head>
+{% block title%}Store{% endblock title%}
 
-<body>
-	<h2>Store</h2>
+{% block content %}
+	<div>
+		<h2>Store</h2>
+	</div>
 
-	<p>
+	<div>
 		<form action="add">
-			<input type="submit" value="add">
+			<input type="submit" value="Add Item">
 		</form>
-	</p>
+	</div>
 
-	<p>
+	<div>
 		{% for listing in listings %}
-			<p>
+			<div class = "lists">
 				<div style="width: 100px; height: 100px">
-				<img src="{{ listing.0.image.url }}">
+					<img src="{{ listing.0.image.url }}">
 				</div>
-				{{ listing.0.name }}
-				{{ listing.0.description }}
-				{{ listing.1.quantity}}
-				{{ listing.1.price}}
-				<a href="drop_{{item.itemid}}">Delete</a>
-			</p>
-		{% endfor %}
-	<p>
-</body>
+				<div>
+					<div class = "item_name">
+						{{ listing.0.name }}
+					</div>
 
-</html>
+					<div class = "item_descr">
+						<label>Quantiy: </label>{{ listing.1.quantity}}
+						<label>Price: $</label>{{ listing.1.price}}
+					</div>
+
+					<div class = "item_descr">
+						{{ listing.0.description }}
+					</div>
+					<div class = "navbar">
+						<a href="drop_{{listing.0.itemid}}">Delete</a>
+						<a href="modify_{{listing.0.itemid}}">Edit</a>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock content %}
