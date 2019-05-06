@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+#from django_countries.fields import CountryField
 
 from .managers import AccountManager, EmployeeManager
 from .choices import DEPT_CHOICES
@@ -160,3 +161,15 @@ class Card(models.Model):
 	
 	class Meta:
 		unique_together = (('user_account','cardholder'),)
+
+class Address(models.Model):
+	street = models.CharField(max_length=255, blank=False)
+	zipcode = models.CharField(max_length=5, blank=False)
+	stateprovince =  models.CharField(max_length=255, blank=False)
+	city = models.CharField(max_length=255, blank=False)
+	country =  models.CharField(max_length=255, blank=False)
+	name =  models.CharField(max_length=255, blank=False)
+
+	currentAccount = models.ForeignKey('UserAccount', on_delete=models.CASCADE, related_name ="currUser_id")
+	currentUser = models.ManyToManyField(UserAccount)
+	

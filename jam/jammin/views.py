@@ -4,7 +4,7 @@ from django.http import	HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 
-from .forms import AddItemForm, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm, AddPaymentOption
+from .forms import AddItemForm, AddAddress, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm, AddPaymentOption
 from . import models
 
 def index(request):
@@ -224,8 +224,41 @@ def drop_card(request, username, id):
 
 	user = request.user.useraccount
 	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
-	#sells= models.Sells.objects.get(seller=user.userid, item=itemid)
+	
 	cardToDelete.delete()
-	#models.Item.objects.filter(itemid=itemid, useraccount=None).delete()
 
 	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
+
+def addview_address(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	uid = request.user.useraccount.userid
+	addrQuerySet = models.Address.objects.filter(currentAccount_id=uid) #usersCards is a queryset
+	yourAddrList = list(addrQuerySet)
+	
+	if request.method == 'POST':
+		addr_form = AddAddress(request.POST, request.FILES)
+		if addr_form.is_valid():
+			user = request.user.useraccount
+			addr = addr_form.save(commit=False)
+			addr.currentAccount = request.user.useraccount
+			addr.save()
+			return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': request.user.useraccount.username}))
+
+	else:
+		addr_form = AddAddress()
+	
+	return render(request, "addview_address.html", {'addr_form': addr_form, 'yourAddrList': yourAddrList, 'myuser': request.user})
+
+def drop_addr(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	addrToDelete = models.Address.objects.get(pk=id,currentAccount=user)
+
+	addrToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': user.username}))
