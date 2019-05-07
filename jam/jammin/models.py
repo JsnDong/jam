@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 
-from .managers import AccountManager, EmployeeManager
+from .managers import AccountManager, EmployeeManager, CartManager, CartHasManager
 from .choices import DEPT_CHOICES
 
 from PIL import Image
@@ -52,24 +52,40 @@ class Item(models.Model):
 
 		super(Item, self).save()
 
-'''
+
+class Sells(models.Model):
+	seller = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+	item = models.ForeignKey('Item', on_delete=models.CASCADE)
+	price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+	quantity = models.IntegerField(validators=[MinValueValidator(1)])
+
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
+
+
 class CartHas(models.Model):
 	user = models.ForeignKey('UserAccount', models.CASCADE,
 								null=False)
 	item = models.ForeignKey('Item', models.CASCADE, blank=True,
 								null=True)
+	seller = models.ForeignKey('Sells', models.CASCADE, blank=True, null=True)
 	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
-	quantity = models.IntegerField(blank=True, null=True,
-								   validators=[MinValueValidator(0)])
+	quantity = models.IntegerField(blank=True, null=False,
+								   validators=[MinValueValidator(0)], default=1)
+	objects = CartHasManager()
+
+
 	def __str__(self):
-		return ", ".join([str(detail) for detail in [user, item, quantity]])
+		return ", ".join([str(detail) for detail in [user, item, seller, quantity]])
+
 
 class Cart(models.Model):
-	cart_has = models.ManyToManyField(Item, through='CartHas')
+	cart_has = models.ManyToManyField(Sells, through='CartHas')
 	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
+	objects = CartManager()
 	def __str__(self):
-		return str(self.cart_has)+self.total
-'''
+		return str(self.cart_has)+str(self.total)
+
 
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
@@ -112,19 +128,10 @@ class UserAccount(models.Model):
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
 	store = models.ManyToManyField(Item, through='Sells')
-	#cart = models.ManyToManyField(Cart, through='CartHas')
+	cart = models.ManyToManyField(Cart, through='CartHas')
 
 	def __str__(self):
 		return str(self.userid)
-
-class Sells(models.Model):
-	seller = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
-	item = models.ForeignKey('Item', on_delete=models.CASCADE)
-	price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
-	quantity = models.IntegerField(validators=[MinValueValidator(1)])
-
-	def __str__(self):
-		return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
 
 class EmployeeAccount(models.Model):
 	account = models.OneToOneField(

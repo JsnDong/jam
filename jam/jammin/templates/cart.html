@@ -1,1 +1,39 @@
-<h2>Cart</h2>
+{% extends "base.html" %}
+
+{% block title%}Store{% endblock title%}
+
+{% block content %}
+	<div>
+		<h2>Cart</h2>
+	</div>
+    <div>
+		{% for item in cart %}
+			<div class = "lists">
+				<div style="width: 100px; height: 100px">
+					<img src="{{ item.1.thumbnail.url }}">
+				</div>
+				<div>
+					<div class = "item_name">
+						<a href="/item_{{item.0.item_id}}">{{ item.1.name }}</a>
+					</div>
+                    <div class = "item_descr">
+						{{ item.1.description }}
+					</div>
+					<div class = "item_descr">
+						<label>Quantiy: </label>{{ item.0.quantity }}
+						<label>Price: $</label>{{ item.2 }}
+					</div>
+					<div class = "navbar">
+						<a href="">Delete</a>
+						<a href="">+</a>
+                        <a href="">-</a>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+        <div>
+            <h3>Total: {{ total }}</h3>
+        </div>
+	</div>
+{% endblock content %}
+

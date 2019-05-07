@@ -15,7 +15,7 @@ def search(request):
 	if request.method == 'POST':
 		query = request.POST.get('query')
 		query = query.replace(" ", "_")
-		return HttpResponseRedirect('/query_' + query)
+		return HttpResponseRedirect('/query_' + query, {'account' : request.user})
 	else:
 		return HttpResponseRedirect('/')
 
@@ -213,24 +213,44 @@ def modify_item(request, username, itemid):
 
 	return render(request, "modify_item.html", {'account': request.user,'item_form': item_form, 'sells_form': sells_form})
 
-'''
-def user_cart(request, username):
-	# if not request.user.is_authenticated or\
-	# 	   request.user.useraccount.username != username:
-	# 	return HttpResponseRedirect('/')
-	#
-	# user = request.user.useraccount
-	# cart = user.cart.all()
-	# listings = list()
-	# for item in cart:
-	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
-	# 	listing = [item, sells]
-	# 	listings += [listing]
-	#
-	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
+def user_cart(request):
+	if request.user.is_authenticated:
+		user = request.user.useraccount.userid
+		items = models.CartHas.objects.filter(user_id = request.user.useraccount.userid)
+		cart = list()
+		for i in items:
+			item = models.Item.objects.get(itemid = i.item_id)
+			price = models.Sells.objects.get(item=i.item, seller_id=i.seller_id).price
+			total = float(price) * float(i.quantity)
+			cart = [i, item, total]
+			cart += [cart]
+		cart_total = models.Cart.objects.get(id = items[0].cart_id).total
 
-	return render(request, 'cart.html')
+		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : total})
 
-def add_to_cart(request, username, itemid):
-	return render(request, 'cart.html')
-'''
+def add_to_cart(request, itemid, author):
+	if request.user.is_authenticated:
+		user = request.user.useraccount.userid
+		item = itemid
+		seller = author
+		quantity = 1
+		#ITEM ALREADY IN CART JUST CHANGING QUANTITY
+		try:
+			carthas = models.CartHas.objects.get(user_id = user, item_id = item, seller_id = seller)
+			carthas.quantity = carthas.quantity + quantity
+			carthas.save()
+			cartid = carthas.cart.id
+			cart = models.Cart.objects.get(id = cartid)
+		except (Exception):
+			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
+			try:
+				cart = models.CartHas.objects.get(user_id = user).id
+			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
+			except (Exception):
+				cart = models.Cart.objects.create_cart().id
+			carthas = models.CartHas.objects.create_carthas(user, item, seller, cart, quantity)
+		cart = models.Cart.objects.get(id = cart)
+		price = models.Sells.objects.get(seller_id = seller, item_id = item).price
+		cart.total = cart.total + quantity * float(price)
+		cart.save()
+	return render(request, 'search_results.html', {'account': request.user})
