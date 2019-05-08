@@ -392,6 +392,28 @@ def addview_card(request, username):
 		card_form = AddPaymentOption()
 	
 	return render(request, "addview_card.html", {'card_form': card_form, 'yourCardsList': yourCardsList, 'myuser': request.user})
+
+def id_in_list(order, orders):
+	for i in range (0, len(orders)):
+		if(order.orderid == orders[i].orderid):
+			return True
+	return False
+
+def user_orders(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	# try:
+	carts = request.user.useraccount.cart.filter(ordered='True')
+	orders = list()
+	total = list()
+	for cart in carts:
+		temp = models.Order.objects.filter(cart=cart, complete='True')
+		if not id_in_list(temp[0], orders):
+			orders += temp
+	# except (Exception):
+	# 	orders = list()
+	return render(request, 'user_orders.html', {'orders' : orders, 'username': username})
+
 def drop_card(request, username, id):
 	if not request.user.is_authenticated or\
 		   request.user.useraccount.username != username:

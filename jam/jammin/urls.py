@@ -37,5 +37,6 @@ urlpatterns = [
 	path('<slug:username>_profile/payment/', views.addview_card, name="view/add_card"),
 	path('<slug:username>_profile/address/', views.addview_address, name="view/add_address"),
 	path('<slug:username>_profile/payment/drop_<int:id>', views.drop_card, name="drop_card"),
-	path('<slug:username>_profile/address/drop_<int:id>', views.drop_addr, name="drop_addr")
+	path('<slug:username>_profile/address/drop_<int:id>', views.drop_addr, name="drop_addr"),
+	path('<slug:username>_profile/orders', views.user_orders, name="orders")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
