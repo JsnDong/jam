@@ -155,7 +155,7 @@ class Card(models.Model):
 	expiry_date = models.DateField(blank =False, null=True)
 	cvn = models.CharField(max_length=200, blank= False)
 
-	cardholder = models.CharField(max_length=200, unique=True, blank =False, null=True)
+	cardholder = models.CharField(max_length=200, blank =False, null=True)
 	user_account = models.ForeignKey('UserAccount', on_delete=models.CASCADE, related_name ="useracc_id")
 	useraccounts = models.ManyToManyField(UserAccount)
 	
@@ -166,7 +166,7 @@ class Address(models.Model):
 	street = models.CharField(max_length=255, blank=False)
 	zipcode = models.CharField(max_length=5, blank=False)
 	stateprovince =  models.CharField(max_length=255, blank=False)
-	city = models.CharField(max_length=255, blank=False)
+	city = models.CharField(max_length=255)
 	country =  models.CharField(max_length=255, blank=False)
 	name =  models.CharField(max_length=255, blank=False)
 

@@ -13,7 +13,7 @@
 		<div>
 			{% for Address in yourAddrList %}
 			<div class = "lists">
-				<div style="float: left; width: 25%;" >
+				<div style="float: left; width: 12.5%;" >
 					<ul>
 						<li>
 							<div class = "Name">
@@ -23,15 +23,35 @@
 					</ul>
 				</div>
 
-				<div style="float: left; width: 25%;">
+				<div style="float: left; width: 12.5%;" >
+					<ul>
+						<li>
+							<div class = "Street">
+                                {{ Address.street }}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div style="float: left; width: 12.5%;">
 						<ul>
 							<li>
-								<div class = "street">
-										{{ Address.street }}
+								<div class = "Zip">
+										{{ Address.zipcode}}
 								</div>
 							</li>
 						</ul>
 				</div>
+
+				<div style="float: left; width: 12.5%;">
+					<ul>
+						<li>
+							<div class = "State">
+									{{ Address.stateprovince}}
+							</div>
+						</li>
+					</ul>
+			</div>
 
 				<div style="float: left; width: 25%;">
 						<ul>
