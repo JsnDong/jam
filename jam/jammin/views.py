@@ -219,26 +219,26 @@ def take_item(elem):
 def user_cart(request):
 	if request.user.is_authenticated:
 		user = request.user.useraccount
+		cart_len = 0
 		try:
 			cart_t = user.cart.all()
 			carthas = models.CartHas.objects.filter(cart=cart_t[0])
 			cart = list()
 			for i in carthas:
 				item = models.Item.objects.get(itemid=i.item.itemid)
-				t = i.seller.id
-				x = item.itemid
-				price = models.Sells.objects.get(item=item, seller=t).price
+				price = models.Sells.objects.get(item=item, seller=i.seller.id).price
 				total = float(price) * float(i.quantity)
+				cart_len = cart_len + i.quantity
 				cartt = [i, item, total]
 				cart += [cartt]
 			cart_total = cart_t[0].total
 		except (Exception):
 			cart = list()
 			cart_total = 0.00
-		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total})
+		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total, 'cart_len' : cart_len})
 	cart = list()
 	cart_total = 0.00
-	return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total})
+	return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total, 'cart_len' : len(cart)})
 
 def add_to_cart(request, itemid, author):
 	if request.user.is_authenticated:

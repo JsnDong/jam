@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title%}Store{% endblock title%}
+{% block title%}Cart{% endblock title%}
 
 {% block content %}
 	<div>
 		<h2>Cart</h2>
 	</div>
-    <div>
-        {% for entry in cart %}
+	<div>
+		{% for entry in cart %}
 			<div class = "lists">
 				<div style="width: 100px; height: 100px">
 					<img src="{{ entry.1.thumbnail.url }}">
@@ -16,7 +16,7 @@
 					<div class = "item_name">
 						<a href="/item_{{entry.0.item_id}}">{{ entry.1.name }}</a>
 					</div>
-                    <div class = "item_descr">
+					<div class = "item_descr">
 						{{ entry.1.description }}
 					</div>
 					<div class = "item_descr">
@@ -26,14 +26,22 @@
 					<div class = "navbar">
 						<a href="delete_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">Delete</a>
 						<a href="inc_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">+</a>
-                        <a href="dec_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">-</a>
+						<a href="dec_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">-</a>
 					</div>
 				</div>
 			</div>
 		{% endfor %}
-        <div>
-            <h3>Total: ${{ total }}</h3>
-        </div>
+		<div>
+			{% if cart_len > 1 %}
+                <h3>Subtotal ({{cart_len}} items): ${{ total }}</h3>
+                <a href="checkout">Proceed to Checkout</a>
+			{% else %}
+                <h3>Subtotal ({{cart_len}} item): ${{ total }}</h3>
+                {% if cart_len == 1 %}
+                     <a href="checkout">Proceed to Checkout</a>
+                {% endif %}
+			{% endif %}
+		</div>
 	</div>
 {% endblock content %}
 
