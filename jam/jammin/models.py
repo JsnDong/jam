@@ -11,6 +11,15 @@ from PIL import Image
 from io import BytesIO
 import sys, os
 
+#EMPLOYEES ARE ONLY USERS WHO CAN CHANGE THIS TABLE
+class Shipping(models.Model):
+	shipid = models.IntegerField(primary_key=True,\
+							  validators=[MinValueValidator(0),
+										  MaxValueValidator(999999999)])
+	type = models.CharField(unique=True, max_length=255, null=False)
+	price = models.IntegerField(validators=[MinValueValidator(0)], null=False)
+	delivery_est = models.IntegerField(validators=[MinValueValidator(1)], null=False)
+
 class Item(models.Model):
 	itemid = models.AutoField(primary_key=True,\
 							  validators=[MinValueValidator(100000000),

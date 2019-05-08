@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title%}CheckoutAddress{% endblock title%}
+
+{% block content %}
+	<div>
+		<h2>Checkout Step 1: Select Shipping Address</h2>
+	</div>
+	<div>
+		<h3>Your Addresses:</h3>
+		<!--List users addresses-->
+		<!--Test-->
+		<h4>305 Project Lane, NYC</h4>
+		<!--Number in URL will be address id number-->
+		<a href="/checkout_address_1">Select</a>
+		<a href="">Add New Address</a>
+		<a href="cart/">Cancel</a>
+	</div>
+{% endblock content %}
+<!--1) address (select yours, add new)
+	2) Shipping options
+	3) Payment Options (select or add new)-->

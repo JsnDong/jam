@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
+from .choices import SHIPPING_CHOICES
 
 from . import models, forms
 
@@ -297,3 +298,16 @@ def dec_cart_item(request, itemid, seller):
 def delete_cart_item(request, itemid, seller):
 	return item_change_cart_quantity(request, itemid, seller, 2)
 
+def checkout_address(request):
+	ship = models.Shipping.objects.all()
+	return render(request, 'checkout_shipping.html', {'ship' : ship})
+
+
+def checkout_shipping(request):
+	return render(request, 'checkout_card.html')
+
+def checkout_card(request):
+	return render(request, 'order_confirm.html')
+
+def checkout(request):
+	return render(request, 'checkout_address.html')

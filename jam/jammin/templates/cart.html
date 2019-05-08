@@ -24,9 +24,9 @@
 						<label>Price: $</label>{{ entry.2 }}
 					</div>
 					<div class = "navbar">
-						<a href="delete_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">Delete</a>
 						<a href="inc_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">+</a>
 						<a href="dec_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">-</a>
+						<a href="delete_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">Delete</a>
 					</div>
 				</div>
 			</div>
@@ -38,7 +38,7 @@
 			{% else %}
                 <h3>Subtotal ({{cart_len}} item): ${{ total }}</h3>
                 {% if cart_len == 1 %}
-                     <a href="checkout">Proceed to Checkout</a>
+                     <a href="/checkout">Proceed to Checkout</a>
                 {% endif %}
 			{% endif %}
 		</div>

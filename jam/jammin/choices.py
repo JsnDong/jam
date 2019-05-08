@@ -7,3 +7,10 @@ DEPT_CHOICES = (
 	('keyboard', 'KEYBOARD'),
 	('other', 'OTHER'),
 )
+
+SHIPPING_CHOICES = (
+	(None, 'SELECT'),
+	('standard', 'STANDARD'),
+	('twoday', 'TWO-DAY'),
+	('oneday', 'ONE-DAY'),
+)
