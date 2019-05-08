@@ -236,7 +236,9 @@ def user_cart(request):
 			cart = list()
 			cart_total = 0.00
 		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total})
-
+	cart = list()
+	cart_total = 0.00
+	return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total})
 
 def add_to_cart(request, itemid, author):
 	if request.user.is_authenticated:
@@ -263,6 +265,7 @@ def add_to_cart(request, itemid, author):
 		cart.save()
 		cartid = carthas.cart.id
 		return HttpResponseRedirect('/cart/')
+	return HttpResponseRedirect('/')
 
 
 def item_change_cart_quantity(request, itemid, author, quantity):
@@ -284,6 +287,7 @@ def item_change_cart_quantity(request, itemid, author, quantity):
 		cart.total = cart.total + quantity * float(price)
 		cart.save()
 		return HttpResponseRedirect('/cart/')
+	return HttpResponseRedirect('/')
 
 
 def inc_cart_item(request, itemid, seller):

@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 
-from .managers import AccountManager, EmployeeManager, CartManager, CartHasManager
+from .managers import AccountManager, EmployeeManager
 from .choices import DEPT_CHOICES
 
 from PIL import Image
