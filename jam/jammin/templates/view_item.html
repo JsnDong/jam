@@ -48,8 +48,7 @@
 	    				<label>Seller: </label><a href="/profile_{{listing.seller.username}}">{{ listing.seller.username }}</a>
 						<label>Price: </label>{{ listing.price }}
 						<label>Quantity: </label>{{ listing.quantity }}
-						<a href="/cart">Add to Cart</a>
-
+						<a href="add_to_cart_{{listing.item.itemid}}_{{listing.seller.userid}}">Add to Cart</a>
 					</div>
 	    		</div>
 	    		{% endif %}

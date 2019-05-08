@@ -7,32 +7,32 @@
 		<h2>Cart</h2>
 	</div>
     <div>
-		{% for item in cart %}
+        {% for entry in cart %}
 			<div class = "lists">
 				<div style="width: 100px; height: 100px">
-					<img src="{{ item.1.thumbnail.url }}">
+					<img src="{{ entry.1.thumbnail.url }}">
 				</div>
 				<div>
 					<div class = "item_name">
-						<a href="/item_{{item.0.item_id}}">{{ item.1.name }}</a>
+						<a href="/item_{{entry.0.item_id}}">{{ entry.1.name }}</a>
 					</div>
                     <div class = "item_descr">
-						{{ item.1.description }}
+						{{ entry.1.description }}
 					</div>
 					<div class = "item_descr">
-						<label>Quantiy: </label>{{ item.0.quantity }}
-						<label>Price: $</label>{{ item.2 }}
+						<label>Quantiy: </label>{{ entry.0.quantity }}
+						<label>Price: $</label>{{ entry.2 }}
 					</div>
 					<div class = "navbar">
-						<a href="">Delete</a>
-						<a href="">+</a>
-                        <a href="">-</a>
+						<a href="delete_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">Delete</a>
+						<a href="inc_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">+</a>
+                        <a href="dec_cart_item_{{entry.0.item_id}}_{{entry.0.seller_id}}">-</a>
 					</div>
 				</div>
 			</div>
 		{% endfor %}
         <div>
-            <h3>Total: {{ total }}</h3>
+            <h3>Total: ${{ total }}</h3>
         </div>
 	</div>
 {% endblock content %}

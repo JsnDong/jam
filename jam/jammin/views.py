@@ -213,20 +213,30 @@ def modify_item(request, username, itemid):
 
 	return render(request, "modify_item.html", {'account': request.user,'item_form': item_form, 'sells_form': sells_form})
 
+def take_item(elem):
+	return elem[1].itemid
+
 def user_cart(request):
 	if request.user.is_authenticated:
-		user = request.user.useraccount.userid
-		items = models.CartHas.objects.filter(user_id = request.user.useraccount.userid)
-		cart = list()
-		for i in items:
-			item = models.Item.objects.get(itemid = i.item_id)
-			price = models.Sells.objects.get(item=i.item, seller_id=i.seller_id).price
-			total = float(price) * float(i.quantity)
-			cart = [i, item, total]
-			cart += [cart]
-		cart_total = models.Cart.objects.get(id = items[0].cart_id).total
+		user = request.user.useraccount
+		try:
+			cart_t = user.cart.all()
+			carthas = models.CartHas.objects.filter(cart=cart_t[0])
+			cart = list()
+			for i in carthas:
+				item = models.Item.objects.get(itemid=i.item.itemid)
+				t = i.seller.id
+				x = item.itemid
+				price = models.Sells.objects.get(item=item, seller=t).price
+				total = float(price) * float(i.quantity)
+				cartt = [i, item, total]
+				cart += [cartt]
+			cart_total = cart_t[0].total
+		except (Exception):
+			cart = list()
+			cart_total = 0.00
+		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total})
 
-		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : total})
 
 def add_to_cart(request, itemid, author):
 	if request.user.is_authenticated:
@@ -236,21 +246,50 @@ def add_to_cart(request, itemid, author):
 		quantity = 1
 		#ITEM ALREADY IN CART JUST CHANGING QUANTITY
 		try:
-			carthas = models.CartHas.objects.get(user_id = user, item_id = item, seller_id = seller)
-			carthas.quantity = carthas.quantity + quantity
-			carthas.save()
-			cartid = carthas.cart.id
-			cart = models.Cart.objects.get(id = cartid)
+			t = inc_cart_item(request, itemid, author)
+			return t
 		except (Exception):
 			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
 			try:
-				cart = models.CartHas.objects.get(user_id = user).id
+				cartboi = models.CartHas.objects.filter(user_id = user)
+				cart = cartboi[0].cart.id
 			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
 			except (Exception):
-				cart = models.Cart.objects.create_cart().id
-			carthas = models.CartHas.objects.create_carthas(user, item, seller, cart, quantity)
+				cart = models.Cart.objects.create(total=0).id
+			carthas = models.CartHas.objects.create(quantity=quantity, user_id=user, item_id=item, seller_id=seller, cart_id=cart)
 		cart = models.Cart.objects.get(id = cart)
 		price = models.Sells.objects.get(seller_id = seller, item_id = item).price
 		cart.total = cart.total + quantity * float(price)
 		cart.save()
-	return render(request, 'search_results.html', {'account': request.user})
+		cartid = carthas.cart.id
+		return HttpResponseRedirect('/cart/')
+
+
+def item_change_cart_quantity(request, itemid, author, quantity):
+	if request.user.is_authenticated:
+		user = request.user.useraccount.userid
+		carthas = models.CartHas.objects.get(user_id = user, item_id = itemid, seller_id = author)
+		if quantity == 2:
+			quantity = (-1)*carthas.quantity
+			carthas.delete()
+		else:
+			carthas.quantity = carthas.quantity + quantity
+			if carthas.quantity == 0:
+				carthas.delete()
+			else:
+				carthas.save()
+		cartid = carthas.cart.id
+		cart = models.Cart.objects.get(id = cartid)
+		price = models.Sells.objects.get(seller_id = author, item_id = itemid).price
+		cart.total = cart.total + quantity * float(price)
+		cart.save()
+		return HttpResponseRedirect('/cart/')
+
+
+def inc_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, 1)
+def dec_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, -1)
+def delete_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, 2)
+

@@ -34,15 +34,3 @@ class EmployeeManager(models.Manager):
 		employee.save()
 		return employee
 
-class CartManager(models.Manager):
-	def create_cart(self):
-		cart = self.model(total = 0)
-		cart.save()
-		return cart
-class CartHasManager(models.Manager):
-	def create_carthas(self, user, item, seller, cart, quantity):
-		carthas = self.model(1, item, seller, cart, quantity)
-		carthas.save()
-		return carthas
-
-

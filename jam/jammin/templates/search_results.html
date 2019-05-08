@@ -23,9 +23,15 @@
                 <div class = "item_descr">
                     {{ item.description }}
                 </div>
-                <div style = "text-align: right">
-                    <a href="add_to_cart_{{item.itemid}}_{{item.author}}">Add to Cart</a>
-                </div>
+                {% if item.author == request.user.useraccount %}
+                    <div style = "text-align: right">
+                        <a href="store/">Your Store</a>
+                    </div>
+                {% else %}
+                    <div style = "text-align: right">
+                        <a href="add_to_cart_{{item.itemid}}_{{item.author}}">Add to Cart</a>
+                    </div>
+                {% endif %}
             </div>
         {% empty %}
             No results found

@@ -59,8 +59,8 @@ class Sells(models.Model):
 	price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
 	quantity = models.IntegerField(validators=[MinValueValidator(1)])
 
-	def __str__(self):
-		return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
+	# def __str__(self):
+	# 	return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
 
 
 class CartHas(models.Model):
@@ -72,17 +72,17 @@ class CartHas(models.Model):
 	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
 	quantity = models.IntegerField(blank=True, null=False,
 								   validators=[MinValueValidator(0)], default=1)
-	objects = CartHasManager()
+	#objects = CartHasManager()
 
 
-	def __str__(self):
-		return ", ".join([str(detail) for detail in [user, item, seller, quantity]])
+	# def __str__(self):
+	# 	return ", ".join([str(detail) for detail in [user, item, seller,  quantity]])
 
 
 class Cart(models.Model):
 	cart_has = models.ManyToManyField(Sells, through='CartHas')
 	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
-	objects = CartManager()
+	#objects = CartManager()
 	def __str__(self):
 		return str(self.cart_has)+str(self.total)
 
