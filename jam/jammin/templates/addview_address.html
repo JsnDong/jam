@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title%}Addresses{% endblock title%}
+
+{% block content %}
+
+	<div>
+		<h2>Your Addresses</h2>
+	</div>
+
+	<div>
+		{% if yourAddrList %}
+		<div>
+			{% for Address in yourAddrList %}
+			<div class = "lists">
+				<div style="float: left; width: 25%;" >
+					<ul>
+						<li>
+							<div class = "Name">
+                                {{ Address.name }}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "street">
+										{{ Address.street }}
+								</div>
+							</li>
+						</ul>
+				</div>
+
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div>
+										<a href="drop_{{Address.id}}">Delete</a>
+								</div>
+							</li>
+						</ul>
+				</div>
+				<div style="float: right; width: 25%;">
+						<ul>
+							<li>
+								<div>
+										<a href="modify_{{Address.id}}">Edit</a>
+								</div>
+							</li>
+						</ul>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% else %}
+		<p>You have no saved Addresses.</p>
+		{% endif %}
+	</div>
+	<style>
+		.hidden{
+			display: none;
+		}
+	</style>
+
+	<script type="text/javascript">
+		function showHide(){
+			var button = document.getElementById("formButton");
+			var hiddeninputs = document.getElementsByClassName("hidden");
+
+			for(var i = 0; i != hiddeninputs.length; i++){
+				hiddeninputs[i].style.display = "block";
+			}
+		}
+	</script>
+
+	<button type="button" id="formButton" onclick="showHide()">Add An Address </button>
+	<div>
+			<form id="addaddr" action="" enctype="multipart/form-data" method="post">
+				{% csrf_token %}
+	
+				<p class="hidden">
+					<label>Name:</label>
+					{{ addr_form.name }}
+				</p>
+	
+				<p class="hidden">
+					<label>Street:</label>
+					{{ addr_form.street }}
+				</p>
+	
+				<p class="hidden">
+					<label>Zip Code:</label>
+					{{ addr_form.zipcode }}
+				</p>
+	
+				<p class="hidden">
+					<label>Country:</label>
+					{{ addr_form.country }}
+                </p>
+                <p class="hidden">
+					<label>State:</label>
+					{{ addr_form.stateprovince }}
+                </p>
+                <p class="hidden">
+					<label>City:</label>
+					{{ addr_form.city }}
+				</p>
+	
+				<input class="hidden" type="submit" name="addedaddr" value="Add Address">
+			</form>
+		</div>
+{% endblock content %}

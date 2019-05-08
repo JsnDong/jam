@@ -3,9 +3,12 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+#from django_countries.fields import CountryField
 
 from .managers import AccountManager, EmployeeManager
 from .choices import DEPT_CHOICES
+
+from .validators import regex_validators
 
 from PIL import Image
 from io import BytesIO
@@ -36,7 +39,6 @@ class Item(models.Model):
 
 	def __str__(self):
 		return self.name
-
 	def save(self):
 		thumbnail_copy = ContentFile(self.image.read())
 		thumbnail_output = BytesIO()
@@ -174,3 +176,27 @@ class EmployeeApp(models.Model):
 
 	def __str__(self):
 		return self.email
+
+class Card(models.Model):
+	card_number = models.CharField(max_length=20, unique=True, blank=False, validators=[regex_validators])
+	expiry_date = models.DateField(blank =False, null=True)
+	cvn = models.CharField(max_length=200, blank= False)
+
+	cardholder = models.CharField(max_length=200, unique=True, blank =False, null=True)
+	user_account = models.ForeignKey('UserAccount', on_delete=models.CASCADE, related_name ="useracc_id")
+	useraccounts = models.ManyToManyField(UserAccount)
+	
+	class Meta:
+		unique_together = (('user_account','cardholder'),)
+
+class Address(models.Model):
+	street = models.CharField(max_length=255, blank=False)
+	zipcode = models.CharField(max_length=5, blank=False)
+	stateprovince =  models.CharField(max_length=255, blank=False)
+	city = models.CharField(max_length=255, blank=False)
+	country =  models.CharField(max_length=255, blank=False)
+	name =  models.CharField(max_length=255, blank=False)
+
+	currentAccount = models.ForeignKey('UserAccount', on_delete=models.CASCADE, related_name ="currUser_id")
+	currentUser = models.ManyToManyField(UserAccount)
+	

@@ -28,13 +28,14 @@
               color: white;
               align-content: center;
             }
-
+            .navbar a:hover {
+              background-color: #111;
+            }
             #logo{
                 color: white;
                 font-size: 300%;
                 width: 100%;
                 font-family: Georgia, Verdana, Segoe, sans-serif;
-                text-decoration: none;
             }
             .top li{
                 float: left;
@@ -110,7 +111,7 @@
                     {% if account.is_authenticated %}
                         <li>
                             <a>
-                                Hello, <a href="/{{ account.useraccount.username }}_profile/">{{ account.name }}</a>
+                                Hello, <a href="{{ account.useraccount.username }}_profile/">{{ account.name }}</a>
                             </a>
                         </li>
 
@@ -124,6 +125,9 @@
                     {% endif %}
                     <li>
                         <a href="/cart">Cart</a>
+                    </li>
+                    <li>
+                        <a href='/' >Home</a>
                     </li>
                 </ul>
             </div>

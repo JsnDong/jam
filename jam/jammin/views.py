@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
 from .choices import SHIPPING_CHOICES
-
 from . import models, forms
+from .forms import AddItemForm, AddAddress, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm, AddPaymentOption
 
 def index(request):
 	most_viewed = list(models.Item.objects.all().order_by('-views'))[:10]
@@ -75,6 +75,23 @@ def add_listing(request, itemid):
 
 	return render(request, 'add_listing.html', {'account': request.user, 'item': item, 'sells_form': sells_form})
 
+def search(request):
+	if request.method == 'POST':
+		query = request.POST.get('query')
+		query = query.replace(" ", "_")
+		return HttpResponseRedirect('/query_' + query)
+	else:
+		return HttpResponseRedirect('/')
+
+def search_results(request, query):
+	if request.method == 'GET':
+		query = query.replace("_", " ")
+		query_set = models.Item.objects.filter(Q(name__icontains = query) | Q(dept__icontains = query) | Q(description__icontains = query))
+		result = list()
+		for item in query_set:
+			temp = [item.name, item.description]
+			result += [temp]
+	return render(request, 'search_results.html', {'result' : result, 'search' : query, 'account': request.user})
 def user_signup(request):
 	if request.method == 'POST':
 		account_form = forms.AccountCreationForm(request.POST)
@@ -311,3 +328,71 @@ def checkout_card(request):
 
 def checkout(request):
 	return render(request, 'checkout_address.html')
+
+#added view for adding and viewing current cards
+def addview_card(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	uid = request.user.useraccount.userid
+	cardQuerySet = models.Card.objects.filter(user_account_id=uid) #usersCards is a queryset
+	yourCardsList = list(cardQuerySet)
+	
+	if request.method == 'POST':
+		card_form = AddPaymentOption(request.POST, request.FILES)
+		if card_form.is_valid():
+			user = request.user.useraccount
+			card = card_form.save(commit=False)
+			card.user_account = request.user.useraccount
+			card.save()
+			return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': request.user.useraccount.username}))
+
+	else:
+		card_form = AddPaymentOption()
+	
+	return render(request, "addview_card.html", {'card_form': card_form, 'yourCardsList': yourCardsList, 'myuser': request.user})
+def drop_card(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
+	
+	cardToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
+
+def addview_address(request, username):
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	uid = request.user.useraccount.userid
+	addrQuerySet = models.Address.objects.filter(currentAccount_id=uid) #usersCards is a queryset
+	yourAddrList = list(addrQuerySet)
+	
+	if request.method == 'POST':
+		addr_form = AddAddress(request.POST, request.FILES)
+		if addr_form.is_valid():
+			user = request.user.useraccount
+			addr = addr_form.save(commit=False)
+			addr.currentAccount = request.user.useraccount
+			addr.save()
+			return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': request.user.useraccount.username}))
+
+	else:
+		addr_form = AddAddress()
+	
+	return render(request, "addview_address.html", {'addr_form': addr_form, 'yourAddrList': yourAddrList, 'myuser': request.user})
+
+def drop_addr(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	addrToDelete = models.Address.objects.get(pk=id,currentAccount=user)
+
+	addrToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': user.username}))
