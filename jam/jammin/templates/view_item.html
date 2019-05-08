@@ -17,21 +17,45 @@
 	    		<div>
 	    			{{ item.description }}
 	    		</div>
+
+	    		{% if item.author == request.user.useraccount %}
+	    		<div>
+	    			<a href="modify_item_{{ item.itemid }}">Edit Item</a>
+	    		</div>
+	    		{% endif %}
 	    	</div>	
 		</div>
 
 		<div>
 			<div>
-	    		<a href="add_listing">Add a listing</a>
+				{% if listing %}
+		    		<p>You are selling this item:</p>
+		    		<p><label>Price: </label>{{ listing.price }}</p>
+					<p><label>Quantity: </label>{{ listing.quantity }}</p>
+					<p>
+						<a href="modify_listing_{{listing.id}}">Edit</a>
+						or 
+						<a href="drop_listing_{{listing.id}}">Delete</a>
+					</p>
+				{% else%}
+					<p><a href="add_listing_{{item.itemid}}">Create a Listing</a></p>
+				{% endif %}
 	    	</div>
 	    	{% for listing in listings %}
+	    		{% if listing.seller.userid != request.user.useraccount.userid %}
 	    		<div>
 	    			<div>
-	    				<label>Seller: </label><a href="/{{listing.seller.username}}_profile">{{ listing.seller.username }}</a>
+	    				<label>Seller: </label><a href="/profile_{{listing.seller.username}}">{{ listing.seller.username }}</a>
 						<label>Price: </label>{{ listing.price }}
 						<label>Quantity: </label>{{ listing.quantity }}
 						<a href="/cart">Add to Cart</a>
+
 					</div>
+	    		</div>
+	    		{% endif %}
+	    	{% empty %}
+	    		<div>
+	    			Out of Stock
 	    		</div>
 			{% endfor %}
     	</div>
