@@ -9,11 +9,31 @@
 	<div>
 		<!--List users cards-->
 		<h3>Your Cards</h3>
-		<!--Test-->
-		<h4>...3452, MasterCard</h4>
-		<a href="checkout_card_1">Select</a>
+		{% for Card in cards %}
+		<a href="/checkout_card_{{order.orderid}}_{{Card.id}}">"
+		<div style="float: left; width: 25%;" >
+					<ul>
+						<li>
+							<div class = "cardholder">
+								{{ Card.cardholder }}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "card_number">
+										{{ Card.card_number }}
+								</div>
+							</li>
+						</ul>
+				</div>
+		</div>
+		{% endfor %}
 		<a href="">Add New Card</a>
-		<a href="cart/">Cancel</a>
+		<a href="cancel_checkout_{{order.orderid}}">Cancel</a>
 	</div>
 {% endblock content %}
 <!--1) address (select yours, add new)

@@ -4,9 +4,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 #from django_countries.fields import CountryField
-
 from .managers import AccountManager, EmployeeManager
-from .choices import DEPT_CHOICES
+from .choices import DEPT_CHOICES, DELIVERY_STATUS_CHOICES
 
 from .validators import regex_validators
 
@@ -93,9 +92,28 @@ class CartHas(models.Model):
 class Cart(models.Model):
 	cart_has = models.ManyToManyField(Sells, through='CartHas')
 	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
-	#objects = CartManager()
+	ordered = models.BooleanField(default=False, null=False)
 	def __str__(self):
 		return str(self.cart_has)+str(self.total)
+
+
+class Delivery(models.Model):
+	tracking_code = models.CharField(max_length=6, blank=False)
+	status = models.CharField(max_length=255, blank=False, choices=DELIVERY_STATUS_CHOICES, default='processing')
+	carrier = models.CharField(max_length=255, blank=False)
+	arrival_date = models.DateField(null=True)
+
+class Order(models.Model):
+	orderid = models.AutoField(primary_key=True,\
+							  validators=[MinValueValidator(100000000),
+										  MaxValueValidator(999999999)])
+	cart = models.ForeignKey('Cart', models.CASCADE, null=False)
+	date_placed = models.DateField(auto_now_add=True, null=False)
+	card = models.ForeignKey('Card', models.CASCADE, null=True)
+	address = models.ForeignKey('Address', models.CASCADE, null=False)
+	shipping = models.ForeignKey('Shipping', models.CASCADE, null=True)
+	complete = models.BooleanField(default='False', null=False)
+	delivery = models.ForeignKey('Delivery', models.CASCADE, null=True)
 
 
 class Account(AbstractBaseUser):

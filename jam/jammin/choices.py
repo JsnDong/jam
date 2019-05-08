@@ -14,3 +14,10 @@ SHIPPING_CHOICES = (
 	('twoday', 'TWO-DAY'),
 	('oneday', 'ONE-DAY'),
 )
+
+DELIVERY_STATUS_CHOICES = (
+	(None, 'SELECT'),
+	('processing', 'PROCESSING'),
+	('shippped', 'SHIPPED'),
+	('delivered', 'DELIVERED')
+)

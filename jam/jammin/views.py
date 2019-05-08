@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
-from .choices import SHIPPING_CHOICES
 from . import models, forms
 from .forms import AddItemForm, AddAddress, AccountCreationForm, UserSignUpForm, LoginForm, SellsForm, EmployeeAppForm, EmployeeLoginForm, AddPaymentOption
 
@@ -239,7 +238,7 @@ def user_cart(request):
 		user = request.user.useraccount
 		cart_len = 0
 		try:
-			cart_t = user.cart.all()
+			cart_t = user.cart.filter(ordered=False)
 			carthas = models.CartHas.objects.filter(cart=cart_t[0])
 			cart = list()
 			for i in carthas:
@@ -272,6 +271,7 @@ def add_to_cart(request, itemid, author):
 			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
 			try:
 				cartboi = models.CartHas.objects.filter(user_id = user)
+				cart_all = cartboi.filter(ordered=False)
 				cart = cartboi[0].cart.id
 			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
 			except (Exception):
@@ -288,8 +288,10 @@ def add_to_cart(request, itemid, author):
 
 def item_change_cart_quantity(request, itemid, author, quantity):
 	if request.user.is_authenticated:
-		user = request.user.useraccount.userid
-		carthas = models.CartHas.objects.get(user_id = user, item_id = itemid, seller_id = author)
+		user = request.user.useraccount
+		cart_t = user.cart.filter(ordered=False)
+		carthass = models.CartHas.objects.filter(cart=cart_t[0], item_id = itemid, seller_id = author)
+		carthas = carthass[0]
 		if quantity == 2:
 			quantity = (-1)*carthas.quantity
 			carthas.delete()
@@ -315,19 +317,58 @@ def dec_cart_item(request, itemid, seller):
 def delete_cart_item(request, itemid, seller):
 	return item_change_cart_quantity(request, itemid, seller, 2)
 
-def checkout_address(request):
-	ship = models.Shipping.objects.all()
-	return render(request, 'checkout_shipping.html', {'ship' : ship})
-
-
-def checkout_shipping(request):
-	return render(request, 'checkout_card.html')
-
-def checkout_card(request):
-	return render(request, 'order_confirm.html')
-
 def checkout(request):
-	return render(request, 'checkout_address.html')
+	try:
+		address = models.Address.objects.filter(currentAccount_id=request.user.useraccount.userid)
+		addresses = list(address)
+	except (Exception):
+		addresses = list()
+	return render(request, 'checkout_address.html', {'addr': addresses})
+
+def checkout_address(request, id):
+	ship = models.Shipping.objects.all()
+	cart = request.user.useraccount.cart.filter(ordered=False)
+	cart = cart[0]
+	address = models.Address.objects.get(id=id)
+	order = models.Order.objects.create(cart=cart, address=address)
+	return render(request, 'checkout_shipping.html', {'ship' : ship, 'order' : order})
+
+
+def checkout_shipping(request, orderid, shipid):
+	order = models.Order.objects.get(orderid=orderid)
+	ship = models.Shipping.objects.get(shipid=shipid)
+	order.shipping = ship
+	order.save()
+	try:
+		cards_t = models.Card.objects.filter(user_account_id=request.user.useraccount.userid)
+		cards = list(cards_t)
+	except (Exception):
+		cards = list()
+	return render(request, 'checkout_card.html', {'order' : order, 'cards' : cards})
+
+def checkout_card(request, orderid, id):
+	order = models.Order.objects.get(orderid=orderid)
+	card = models.Card.objects.get(id=id)
+	order.card = card
+	order.complete = 'True'
+	order.delivery = models.Delivery.objects.create(tracking_code=str(orderid*100), carrier="FedEx")
+	order.save()
+	order.cart.ordered = 'True'
+	order.cart.save()
+	total = float(order.cart.total) + float(order.shipping.price)
+	return render(request, 'order_confirm.html', {'order' : order, 'total' : total})
+
+# def order_confirm(request, orderid):
+# 	#delivery stuffs
+# 	return render('')
+
+def cancel_checkout(request, orderid):
+	order = models.Order.objects.get(orderid=orderid).delete()
+	return user_cart(request)
+
+
+def cancel_checkout_no_order(request):
+	return user_cart(request)
 
 #added view for adding and viewing current cards
 def addview_card(request, username):
