@@ -25,7 +25,7 @@ urlpatterns = [
 
 	re_path(r'^query$',\
 			views.search,\
-			name="search"),
+			name='search'),
 
 	re_path(r'^query_(?P<query>[A-Za-z0-9_]+)?$',\
 			views.search_results,\
@@ -37,23 +37,23 @@ urlpatterns = [
 
 	re_path(r'^add_item$',\
 			views.add_item,\
-			name="add_item"),
+			name='add_item'),
 
 	re_path(r'modify_item_(?P<item_id>[0-9]+)$',\
 			views.modify_item,\
-			name="modify_item"),
+			name='modify_item'),
 
 	re_path(r'add_listing_(?P<item_id>[0-9]+)$',\
 			views.add_listing,\
-			name="add_listing"),
+			name='add_listing'),
 
 	re_path(r'drop_listing_(?P<listing_id>[0-9]+)$',\
 			views.drop_listing,\
-			name="drop_listing"),
+			name='drop_listing'),
 
 	re_path(r'modify_listing_(?P<listing_id>[0-9]+)$',\
 			views.modify_listing,\
-			name="modify_listing"),
+			name='modify_listing'),
 
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/$',\
 			views.user_profile,\
@@ -61,15 +61,15 @@ urlpatterns = [
 
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/store$',\
 		    views.user_store,\
-		    name="user_store"),
+		    name='user_store'),
 
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment$',\
 		    views.add_view_card,\
-		    name="add_view_card"),
+		    name='add_view_card'),
 
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address$',\
 		    views.add_view_address,\
-		    name="add_view_address")
+		    name='add_view_address'),
 
 	#re_path(r'drop_card_(?P<card_id>[0-9]+)$',\
 			#views.drop_card,\
@@ -79,8 +79,24 @@ urlpatterns = [
 			#views.drop_addr,\
 			#name="drop_addr"),
 
-	#re_path(r'^cart/$',\
-			#views.view_cart,\
-			#name='view_cart')
+	re_path(r'^cart/$',\
+			views.view_cart,\
+			name='view_cart'),
+
+	re_path(r'^order/$',\
+			views.view_order,\
+			name='view_order'),
+=======
+	path('add_to_cart_<int:itemid>_<int:author>', views.add_to_cart, name="add_to_cart"),
+	path('cart/inc_cart_item_<int:itemid>_<int:seller>', views.inc_cart_item, name="inc_cart_item"),
+	path('cart/dec_cart_item_<int:itemid>_<int:seller>', views.dec_cart_item, name="dec_cart_item"),
+	path('cart/delete_cart_item_<int:itemid>_<int:seller>', views.delete_cart_item, name='delete_cart_item'),
+	path('checkout', views.checkout, name="checkout"),
+	path('checkout_address_<int:id>', views.checkout_address, name="checkout_address"),
+	path('checkout_shipping_<int:orderid>_<int:shipid>', views.checkout_shipping, name="checkout_shipping"),
+	path('checkout_card_<int:orderid>_<int:id>', views.checkout_card, name="checkout_card"),
+	path('cancel_checkout_<int:orderid>', views.cancel_checkout, name="cancel_checkout"),
+	path('cancel_checkout_no_order', views.cancel_checkout_no_order, name="cancel_checkout_no_order"),
+>>>>>>> 875f8f10331de47a2cf274bb616b11b0d21cd0a8
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

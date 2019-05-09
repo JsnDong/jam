@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title%}CheckoutCard{% endblock title%}
+
+{% block content %}
+	<div>
+		<h2>Checkout Step 3: Select Payment Option</h2>
+	</div>
+	<div>
+		<!--List users cards-->
+		<h3>Your Cards</h3>
+		{% for Card in cards %}
+		<a href="/checkout_card_{{order.orderid}}_{{Card.id}}">"
+		<div style="float: left; width: 25%;" >
+					<ul>
+						<li>
+							<div class = "cardholder">
+								{{ Card.cardholder }}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "card_number">
+										{{ Card.card_number }}
+								</div>
+							</li>
+						</ul>
+				</div>
+		</div>
+		{% endfor %}
+		<a href="">Add New Card</a>
+		<a href="cancel_checkout_{{order.orderid}}">Cancel</a>
+	</div>
+{% endblock content %}
+<!--1) address (select yours, add new)
+	2) Shipping options
+	3) Payment Options (select or add new)-->

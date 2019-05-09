@@ -43,21 +43,24 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="flex_box_row" style="width: 25%; margin: 0 2.5vw; justify-content: space-between;">
                 {% if result.1 %}
                     <div class="item_details_div" style="width: 50%">
                         <div>Best Price</div>
                         <div>${{ result.1.price }} [{{ result.1.quantity }} left]</div>
                         <div>Sold by <a href="/profile_{{ result.1.seller.username }}">{{ result.1.seller.username }}</a></div>
-                        <div><a href="/cart">Add to Cart</a></div>
+                        {% if result.1.seller != request.user.useraccount %}
+                            <div><a href="add_to_cart_{{result.0.itemid}}_{{result.0.author}}">Add to Cart</a></div>
+                        {% endif %}
                     </div>
 
                     <div class="item_details_div" style="width: 50%">
                         <div>Best Price</div>
                         <div>${{ result.1.price }} [{{ result.1.quantity }} left]</div>
                         <div>Sold by <a href="/profile_{{ result.1.seller.username }}">{{ result.1.seller.username }}</a></div>
-                        <div><a href="/cart">Add to Cart</a></div>
+                        {% if result.1.seller != request.user.useraccount %}
+                            <div><a href="add_to_cart_{{result.0.itemid}}_{{result.0.author}}">Add to Cart</a></div>
+                        {% endif %}
                     </div>
                 {% else %}
                     No Listings

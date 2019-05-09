@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Order Completed</h2>
+
+<p class="confirm">Thank you for shopping with Jammin!</p>
+<div>
+	<h2>Reciept: Order ID: {{order.orderid}}</h2>
+	<h3>Date: {{order.date_placed}}</h3>
+	<h3>Subtotal: {{order.cart.total}}</h3>
+	<h3>Shipping Type: {{order.shipping.type}} (${{order.shipping.price}}.00)</h3>
+    <h3>Total: {{total}}</h3>
+    <h3>Card: {{order.card}}</h3>
+    <h3>Address: {{order.address}}</h3>
+	<h3>Delivery Tracking Code: {{order.delivery.tracking_code}}</h3>
+	<h3>Delivery Carrier: {{order.delivery.carrier}}</h3>
+	<h3>Status: {{order.delivery.status}}</h3>
+</div>
+<a href="/">Return to Landing</a>
+{%endblock content%}

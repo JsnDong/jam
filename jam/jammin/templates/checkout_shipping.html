@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title%}CheckoutShipping{% endblock title%}
+
+{% block content %}
+	<div>
+		<h2>Checkout Step 2: Select Delivery Option</h2>
+	</div>
+	<div>
+        {% for op in ship %}
+            <a href="/checkout_shipping_{{order.orderid}}_{{op.shipid}}">{{op.type}} Shipping ({{op.delivery_est}} Business Days): ${{op.price}}.00</a>
+            <br>
+        {% endfor %}
+        <a href="cancel_checkout_{{order.orderid}}">Cancel</a>
+	</div>
+{% endblock content %}
+<!--1) address (select yours, add new)
+	2) Shipping options
+	3) Payment Options (select or add new)-->
+

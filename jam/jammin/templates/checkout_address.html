@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title%}CheckoutAddress{% endblock title%}
+
+{% block content %}
+	<div>
+		<h2>Checkout Step 1: Select Shipping Address</h2>
+	</div>
+	<div>
+		<h3>Your Addresses:</h3>
+		<!--List users addresses-->
+		<div class="lists">
+			{% for a in addr %}
+			<a href="/checkout_address_{{a.id}}">
+				<div style="float: left; width: 25%;" >
+					<ul>
+						<li>
+							<div class = "Name">
+                                {{ a.name }}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div style="float: left; width: 25%;">
+						<ul>
+							<li>
+								<div class = "street">
+										{{ a.street }}
+								</div>
+							</li>
+						</ul>
+				</div>
+			</a>
+		{% endfor  %}
+		</div>
+		<a href="">Add New Address</a>
+		<a href="cancel_checkout_no_order">Cancel</a>
+	</div>
+{% endblock content %}
+<!--1) address (select yours, add new)
+	2) Shipping options
+	3) Payment Options (select or add new)-->

@@ -34,4 +34,3 @@ class EmployeeManager(models.Manager):
 		employee.save()
 		return employee
 
-

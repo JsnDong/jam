@@ -6,6 +6,38 @@ from django.contrib.auth import authenticate, login, logout
 
 from . import models, forms
 
+def index(request):
+	all_items = models.Item.objects.all()
+
+	most_viewed = list(all_items.order_by('-views'))[:10]
+
+	return render(request, 'index.html', {'most_viewed': most_viewed})
+
+def search(request):
+	if request.method == 'POST' and\
+	   request.POST['query']:
+		query = request.POST['query']
+		query = query.replace(" ", "_")
+		return HttpResponseRedirect('/query_' + query)
+	else:
+		raise Http404
+
+def search_results(request, query):
+	user = request.user.useraccount
+	query = query.replace("_", " ")
+	query_set = models.Item.objects.filter(Q(name__icontains = query) |\
+										   Q(dept__icontains = query) |\
+										   Q(description__icontains = query))
+	results = list(query_set)
+	listings = list()
+	for result in results:
+		all_listings = result.sells_set.all()
+		price = buyable.order_by("-price")
+		best_price = price[0] if len(price) != 0 else None 
+		listings += [[result, best_price]]
+	results = listings
+	return render(request, 'search_results.html', {'query' : query, 'results': results})
+
 def user_signup(request):
 	if request.method == 'POST':
 		account_form = forms.AccountCreationForm(request.POST)
@@ -39,10 +71,6 @@ def user_login(request):
 
 	return render(request, 'login.html', {'login_form': login_form})
 
-def account_logout(request):
-	logout(request)
-	return HttpResponseRedirect('/')
-
 def employee_app(request):
 	if request.method == 'POST':
 		form = forms.EmployeeAppForm(request.POST, request.FILES)
@@ -68,60 +96,9 @@ def employee_login(request):
 
 	return render(request, 'employee_login.html', {'form': form})
 
-'''
-def user_cart(request, username):
-	# if not request.user.is_authenticated or\
-	# 	   request.user.useraccount.username != username:
-	# 	return HttpResponseRedirect('/')
-	#
-	# user = request.user.useraccount
-	# cart = user.cart.all()
-	# listings = list()
-	# for item in cart:
-	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
-	# 	listing = [item, sells]
-	# 	listings += [listing]
-	#
-	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
-
-	return render(request, 'cart.html')
-
-def add_to_cart(request, username, itemid):
-	return render(request, 'cart.html')
-'''
-
-def index(request):
-	all_items = models.Item.objects.all()
-
-	most_viewed = list(all_items.order_by('-views'))[:10]
-
-	return render(request, 'index.html', {'most_viewed': most_viewed})
-
-def search(request):
-	if request.method == 'POST' and\
-	   request.POST['query']:
-		query = request.POST['query']
-		query = query.replace(" ", "_")
-		return HttpResponseRedirect('/query_' + query)
-	else:
-		raise Http404
-
-def search_results(request, query):
-	user = request.user.useraccount
-	query = query.replace("_", " ")
-	query_set = models.Item.objects.filter(Q(name__icontains = query) |\
-										   Q(dept__icontains = query) |\
-										   Q(description__icontains = query))
-	results = list(query_set)
-	listings = list()
-	for result in results:
-		all_listings = result.sells_set.all()
-		buyable = all_listings.exclude(seller=user)
-		price = buyable.order_by("-price")
-		best_price = price[0] if len(price) != 0 else None 
-		listings += [[result, best_price]]
-	results = listings
-	return render(request, 'search_results.html', {'query' : query, 'results': results})
+def account_logout(request):
+	logout(request)
+	return HttpResponseRedirect('/')
 
 def user_profile(request, username):
 	try:
@@ -138,6 +115,84 @@ def user_store(request, username):
 		raise Http404
 
 	return render(request, "user_store.html", {'user': user})
+
+def add_view_card(request, username):
+	user =request.user.useraccount
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	cards = user.cards.all()
+	
+	if request.method == 'POST':
+		card_form = forms.PaymentForm(request.POST)
+		if card_form.is_valid():
+			card = card_form.save(commit=False)
+			try:
+				card = models.Card.objects.get(card_number=card.card_number,\
+											 cardholder=card.cardholder,\
+											 expiry_date=card.expiry_date,\
+											 cvn=card.cvn)
+			except:
+				card.save()
+			user.cards.add(card)
+			user.save()
+			return HttpResponseRedirect(reverse('add_view_card', kwargs={'username': user.username}))
+	else:
+		card_form = forms.PaymentForm()
+	
+	return render(request, "add_view_card.html", {'user': user, 'cards': cards, 'card_form': card_form})
+
+def drop_card(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
+	
+	cardToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
+
+def add_view_address(request, username):
+	user = request.user.useraccount
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	addresses = user.addresses.all()
+	
+	if request.method == 'POST':
+		address_form = forms.AddressForm(request.POST)
+		if address_form.is_valid():
+			address = address_form.save(commit=False)
+			try:
+				address = models.Address.objects.get(name=address.name,\
+													 street=address.street,\
+													 stateprovince=address.stateprovince,\
+													 city=address.city,\
+													 country=address.country,\
+													 zipcode=address.zipcode)
+			except:
+				address.save()
+			user.addresses.add(address)
+			user.save()
+			return HttpResponseRedirect(reverse('add_view_address', kwargs={'username': user.username}))
+	else:
+		address_form = forms.AddressForm()
+	
+	return render(request, "add_view_address.html", {'user': user, 'addresses': addresses, 'address_form': address_form})
+
+def drop_address(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	addrToDelete = models.Address.objects.get(pk=id,currentAccount=user)
+
+	addrToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': user.username}))
 
 def view_item(request, item_id):
 	user = request.user.useraccount
@@ -251,6 +306,7 @@ def modify_listing(request, listing_id):
 
 	return render(request, 'add_listing.html', {'item': listing.item, 'listing': listing, 'sells_form': sells_form})
 
+
 def drop_listing(request, listing_id):
 	user = request.user.useraccount
 	if not request.user.is_authenticated:
@@ -265,109 +321,168 @@ def drop_listing(request, listing_id):
 
 	return HttpResponseRedirect(reverse("view_item", kwargs={'item_id': listing.item.itemid}))
 
-'''
-def view_cart(request):
-	return HttpResponseRedirect('/profile_'+request.user.useraccount.username)
+def take_item(elem):
+	return elem[1].itemid
 
-def user_cart(request, username):
-	# if not request.user.is_authenticated or\
-	# 	   request.user.useraccount.username != username:
-	# 	return HttpResponseRedirect('/')
-	#
-	# user = request.user.useraccount
-	# cart = user.cart.all()
-	# listings = list()
-	# for item in cart:
-	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
-	# 	listing = [item, sells]
-	# 	listings += [listing]
-	#
-	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
+def user_cart(request):
+	if request.user.is_authenticated:
+		user = request.user.useraccount
+		cart_len = 0
+		try:
+			cart_t = user.cart.filter(ordered=False)
+			carthas = models.CartHas.objects.filter(cart=cart_t[0])
+			cart = list()
+			for i in carthas:
+				item = models.Item.objects.get(itemid=i.item.itemid)
+				price = models.Sells.objects.get(item=item, seller=i.seller.id).price
+				total = float(price) * float(i.quantity)
+				cart_len = cart_len + i.quantity
+				cartt = [i, item, total]
+				cart += [cartt]
+			cart_total = cart_t[0].total
+		except (Exception):
+			cart = list()
+			cart_total = 0.00
+		return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total, 'cart_len' : cart_len})
+	cart = list()
+	cart_total = 0.00
+	return render(request, "cart.html", {'account': request.user, 'cart':cart, 'total' : cart_total, 'cart_len' : len(cart)})
 
-	return render(request, 'cart.html')
+def add_to_cart(request, itemid, author):
+	if request.user.is_authenticated:
+		user = request.user.useraccount.userid
+		item = itemid
+		seller = author
+		quantity = 1
+		#ITEM ALREADY IN CART JUST CHANGING QUANTITY
+		try:
+			t = inc_cart_item(request, itemid, author)
+			return t
+		except (Exception):
+			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
+			try:
+				cartboi = models.CartHas.objects.filter(user_id = user)
+				cart_all = cartboi.filter(ordered=False)
+				cart = cartboi[0].cart.id
+			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
+			except (Exception):
+				cart = models.Cart.objects.create(total=0).id
+			carthas = models.CartHas.objects.create(quantity=quantity, user_id=user, item_id=item, seller_id=seller, cart_id=cart)
+		cart = models.Cart.objects.get(id = cart)
+		price = models.Sells.objects.get(seller_id = seller, item_id = item).price
+		cart.total = cart.total + quantity * float(price)
+		cart.save()
+		cartid = carthas.cart.id
+		return HttpResponseRedirect('/cart/')
+	return HttpResponseRedirect('/')
 
-def add_to_cart(request, username, itemid):
-	return render(request, 'cart.html')
-'''
+def item_change_cart_quantity(request, itemid, author, quantity):
+	if request.user.is_authenticated:
+		user = request.user.useraccount
+		cart_t = user.cart.filter(ordered=False)
+		carthass = models.CartHas.objects.filter(cart=cart_t[0], item_id = itemid, seller_id = author)
+		carthas = carthass[0]
+		if quantity == 2:
+			quantity = (-1)*carthas.quantity
+			carthas.delete()
+		else:
+			carthas.quantity = carthas.quantity + quantity
+			if carthas.quantity == 0:
+				carthas.delete()
+			else:
+				carthas.save()
+		cartid = carthas.cart.id
+		cart = models.Cart.objects.get(id = cartid)
+		price = models.Sells.objects.get(seller_id = author, item_id = itemid).price
+		cart.total = cart.total + quantity * float(price)
+		cart.save()
+		return HttpResponseRedirect('/cart/')
+	return HttpResponseRedirect('/')
 
-def add_view_card(request, username):
-	user =request.user.useraccount
+def inc_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, 1)
+def dec_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, -1)
+def delete_cart_item(request, itemid, seller):
+	return item_change_cart_quantity(request, itemid, seller, 2)
+
+def checkout(request):
+	try:
+		address = models.Address.objects.filter(currentAccount_id=request.user.useraccount.userid)
+		addresses = list(address)
+	except (Exception):
+		addresses = list()
+	return render(request, 'checkout_address.html', {'addr': addresses})
+
+def checkout_address(request, id):
+	ship = models.Shipping.objects.all()
+	cart = request.user.useraccount.cart.filter(ordered=False)
+	cart = cart[0]
+	address = models.Address.objects.get(id=id)
+	order = models.Order.objects.create(cart=cart, address=address)
+	return render(request, 'checkout_shipping.html', {'ship' : ship, 'order' : order})
+
+
+def checkout_shipping(request, orderid, shipid):
+	order = models.Order.objects.get(orderid=orderid)
+	ship = models.Shipping.objects.get(shipid=shipid)
+	order.shipping = ship
+	order.save()
+	try:
+		cards_t = models.Card.objects.filter(user_account_id=request.user.useraccount.userid)
+		cards = list(cards_t)
+	except (Exception):
+		cards = list()
+	return render(request, 'checkout_card.html', {'order' : order, 'cards' : cards})
+
+def checkout_card(request, orderid, id):
+	order = models.Order.objects.get(orderid=orderid)
+	card = models.Card.objects.get(id=id)
+	order.card = card
+	order.complete = 'True'
+	order.delivery = models.Delivery.objects.create(tracking_code=str(orderid*100), carrier="FedEx")
+	order.save()
+	cart = request.user.useraccount.cart.get(ordered='False')
+	carthas = cart.cart_has.all()
+	# TODO: REMOVE ITEM FROM LISTING BECAUSE PURCHASED
+	# for item in carthas:
+	# 	listing = models.Sells.objects.get(seller=item.seller, item = item.item)
+	# 	x = item.seller.userid
+	# 	z = item.item.itemid
+	# 	d = listing.quantity
+	# 	x = y
+	# 	listing.quantity = listing.quantity - item.quantity
+	# 	listing.save()
+	order.cart.ordered = 'True'
+	order.cart.save()
+	total = float(order.cart.total) + float(order.shipping.price)
+	return render(request, 'order_confirm.html', {'order' : order, 'total' : total})
+
+def cancel_checkout(request, orderid):
+	order = models.Order.objects.get(orderid=orderid).delete()
+	return user_cart(request)
+
+
+def cancel_checkout_no_order(request):
+	return user_cart(request)
+
+def id_in_list(order, orders):
+	for i in range (0, len(orders)):
+		if(order.orderid == orders[i].orderid):
+			return True
+	return False
+
+def user_orders(request, username):
 	if not request.user.is_authenticated:
 		return HttpResponseRedirect('/')
-	
-	cards = user.cards.all()
-	
-	if request.method == 'POST':
-		card_form = forms.PaymentForm(request.POST)
-		if card_form.is_valid():
-			card = card_form.save(commit=False)
-			try:
-				card = models.Card.objects.get(card_number=card.card_number,\
-											 cardholder=card.cardholder,\
-											 expiry_date=card.expiry_date,\
-											 cvn=card.cvn)
-			except:
-				card.save()
-			user.cards.add(card)
-			user.save()
-			return HttpResponseRedirect(reverse('add_view_card', kwargs={'username': user.username}))
-	else:
-		card_form = forms.PaymentForm()
-	
-	return render(request, "add_view_card.html", {'user': user, 'cards': cards, 'card_form': card_form})
-
-'''
-def drop_card(request, username, id):
-	if not request.user.is_authenticated or\
-		   request.user.useraccount.username != username:
-		return HttpResponseRedirect('/')
-
-	user = request.user.useraccount
-	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
-	
-	cardToDelete.delete()
-
-	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
-'''
-
-def add_view_address(request, username):
-	user = request.user.useraccount
-	if not request.user.is_authenticated:
-		return HttpResponseRedirect('/')
-	
-	addresses = user.addresses.all()
-	
-	if request.method == 'POST':
-		address_form = forms.AddressForm(request.POST)
-		if address_form.is_valid():
-			address = address_form.save(commit=False)
-			try:
-				address = models.Address.objects.get(name=address.name,\
-													 street=address.street,\
-													 stateprovince=address.stateprovince,\
-													 city=address.city,\
-													 country=address.country,\
-													 zipcode=address.zipcode)
-			except:
-				address.save()
-			user.addresses.add(address)
-			user.save()
-			return HttpResponseRedirect(reverse('add_view_address', kwargs={'username': user.username}))
-	else:
-		address_form = forms.AddressForm()
-	
-	return render(request, "add_view_address.html", {'user': user, 'addresses': addresses, 'address_form': address_form})
-
-'''
-def drop_address(request, username, id):
-	if not request.user.is_authenticated or\
-		   request.user.useraccount.username != username:
-		return HttpResponseRedirect('/')
-
-	user = request.user.useraccount
-	addrToDelete = models.Address.objects.get(pk=id,currentAccount=user)
-
-	addrToDelete.delete()
-
-	return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': user.username}))
-'''
+	try:
+		carts = request.user.useraccount.cart.filter(ordered='True')
+		orders = list()
+		total = list()
+		for cart in carts:
+			temp = models.Order.objects.filter(cart=cart, complete='True')
+			if not id_in_list(temp[0], orders):
+				orders += temp
+	except (Exception):
+		orders = list()
+	return render(request, 'user_orders.html', {'orders' : orders, 'username': username})
