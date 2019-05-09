@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from . import views
+from . import views, viewsM
 
 urlpatterns = [
 	path('signup/', views.user_signup, name='user_signup'),
@@ -66,6 +66,14 @@ urlpatterns = [
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment/$',\
 		    views.add_view_card,\
 		    name='add_view_card'),
+
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/orders',\
+			viewsM.user_orders,\
+			name="orders"),
+
+	re_path(r'add_to_cart_(?P<itemid>[0-9]+)_(?P<author>[0-9]+)',\
+			viewsM.add_to_cart,\
+			name="add_to_cart"),
 
 	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address/$',\
 		    views.add_view_address,\
