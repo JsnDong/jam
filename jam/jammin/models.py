@@ -22,11 +22,17 @@ class Item(models.Model):
 	dept = models.CharField(max_length=255, choices=DEPT_CHOICES, blank=False, default=None)
 	description = models.TextField(blank=True, null=True)
 
+	#reviews = models.ForeignKey('Review', null=True)
+
 	buys = models.PositiveIntegerField(default=0)
 	views = models.PositiveIntegerField(default=0) 
 
 	def __str__(self):
 		return self.name
+
+	def best_price(self):
+		listings = self.sells_set.all()
+		return list(listings.order_by('-price'))
 
 	def save(self):
 		thumbnail_copy = ContentFile(self.image.read())
@@ -53,6 +59,22 @@ class Item(models.Model):
 		super(Item, self).save()
 
 '''
+class Review(models.Model):
+	rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1),
+										  				  MaxValueValidator(5)])
+	title = models.CharField(max_length=255, null=True)
+	date = models.DateField(auto_now_add=True)
+	review = models.TextField(null=True)
+
+	def __str__(self):
+		return title
+
+class Cart(models.Model):
+	cart_has = models.ManyToManyField(Item, through='CartHas')
+	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
+	def __str__(self):
+		return str(self.cart_has)+self.total
+
 class CartHas(models.Model):
 	user = models.ForeignKey('UserAccount', models.CASCADE,
 								null=False)
@@ -63,12 +85,6 @@ class CartHas(models.Model):
 								   validators=[MinValueValidator(0)])
 	def __str__(self):
 		return ", ".join([str(detail) for detail in [user, item, quantity]])
-
-class Cart(models.Model):
-	cart_has = models.ManyToManyField(Item, through='CartHas')
-	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
-	def __str__(self):
-		return str(self.cart_has)+self.total
 '''
 
 class Account(AbstractBaseUser):
@@ -76,6 +92,8 @@ class Account(AbstractBaseUser):
 	name = models.CharField(max_length=255, blank=False)
 	surname = models.CharField(max_length=255, blank=False)
 	dob = models.DateField(null=True)
+
+	#reviews = models.ForeignKey('Review', null=True)
 
 	joined = models.DateField(auto_now_add=True)
 	seen = models.DateField(auto_now=True)
@@ -112,6 +130,8 @@ class UserAccount(models.Model):
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
 	store = models.ManyToManyField(Item, through='Sells')
+
+	#reviewed = models.ForeignKey('Review', null=True)
 	#cart = models.ManyToManyField(Cart, through='CartHas')
 
 	def __str__(self):

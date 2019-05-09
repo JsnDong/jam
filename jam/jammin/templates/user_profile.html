@@ -3,19 +3,46 @@
 {% block title%}Profile{% endblock title%}
 
 {% block content %}
-	<div>
-		<h2>
-			{% if profile.username == account.useraccount.username %}
+	<div name="profile" class="content_block">
+		<div class="section" style="margin: 2vh 0; padding: 0">
+			{% if user == request.user.useraccount %}
 				My
 			{% else %}
-				{{ profile.username }}{% ifequal profile.username|slice:"-1:" "s" %}'{% else %}'s{% endifequal %}
+				{{ user.username }}'{% if user.username|slice:"-1:" != "s" %}s{% endif %}
 			{% endif %}
 			Profile
-		</h2>
-	</div>
+		</div>
 
-	<div>
-		<a href="store/">Your Store</a>
+		<div class="flex_box_col" style="padding: 0 2vw;">
+		{% if user == request.user.useraccount %}
+			<div>
+				<a href="store" style="color: #FFFFF0; font-weight: bold">Your Listings</a>
+			</div>
+		{% else %}
+			<div name="listings">
+				{% if user.sells_set.all|length != 0 %}
+					<div name="listings_header">
+						<h3>Listings</h3> <a href="store">View All</a>
+					</div>
+					<div name="listings_view">
+						{% for listing in user.sells_set.all|slice:":6" %}
+							<div name="listing">
+								<div name="listing_image">
+									<img src="{{ listing.item.thumbnail.url }}">
+								</div>
+								<div name="listing_details">
+									<label>Price: </label>{{ listing.price }}
+									<label>Quantity: </label>{{ listing.quantity }}
+									<a href="">Add to Cart</a>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				{% else %}
+				<h3>No Listings<h3>
+				{% endif %}
+			</div>
+		{% endif %}
+		</div>
 	</div>
-
 {% endblock content %}

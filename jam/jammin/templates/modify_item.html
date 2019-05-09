@@ -13,7 +13,6 @@
 	<form action="" enctype="multipart/form-data" method="post">
 		{% csrf_token %}
 
-		{% if item_form %}
 			<p>
 				<label>Name</label>
 				{{ item_form.name }}
@@ -33,21 +32,6 @@
 				<label>Description</label>
 				{{ item_form.description }}
 			</p>
-		{% else %}
-			<p>
-				Only the original seller may edit the item.
-			</p>
-		{% endif %}
-
-		<p>
-			<label>Price</label>
-			{{ sells_form.price }}
-		</p>
-
-		<p>
-			<label>Quantity</label>
-			{{ sells_form.quantity }}
-		</p>
 
 		<input type="submit" name="save" value="Save">
 	</form>

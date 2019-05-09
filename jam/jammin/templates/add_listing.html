@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title%}Create Listing{% endblock title%}
+{% block title%}Add/Create Listing{% endblock title%}
 
 {% block content %}
 	<div>
+		<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
 		<div>
 			<div class = "lists" style="width: 100px; height: 100px">
 				<img src="{{ item.thumbnail.url }}">
@@ -17,7 +18,7 @@
 	    		{{ item.description }}
 	    	</div>
 		</div>
-
+		<br>
 		<div>
 			<form action="" method="post">
 				{% csrf_token %}
@@ -30,7 +31,7 @@
 				</div>
 
 				<div>
-					<input type="submit" name="return" value="Create">
+					<input type="submit" name="return" value="List">
 				</div>
 			</form>
 		</div>

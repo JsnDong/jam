@@ -6,7 +6,7 @@
 <body>
 	<h2>Store: Add Item</h2>
 
-	<a href=".">Cancel</a>
+	<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
 
 	<form action="" enctype="multipart/form-data" method="post">
 		{% csrf_token %}
@@ -42,6 +42,6 @@
 		</p>
 
 		<input type="submit" name="another" value="Add and Another">
-		<input type="submit" name="return" value="Add and Return">
+		<input type="submit" name="view" value="Add and View">
 	</form>
 {%endblock content%}

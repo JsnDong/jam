@@ -3,61 +3,115 @@
 {% block title%}{{ item.name }}{% endblock title%}
 
 {% block content %}
-	<div>
-		<div>
-			<div style="width: 500px; height: 500px;">
-				<img src="{{ item.image.url }}" style="display: block;margin: auto;">
-	    	</div>
-
-	    	<div class="lists">
-	    		<div>
-	    			{{ item.name }}
+	<div class="content_body">
+		<div class="flex_box_col">
+			<div class="flex_box_row">
+				<div class="item_image_div" style="background: url({{ item.image.url }}) no-repeat center center">
+					<img src="{{ item.image.url }}" style="visibility: hidden;">
 	    		</div>
 
-	    		<div>
-	    			{{ item.description }}
+	    		<div class="flex_box_col" style=" width: 40%; margin: 0 1.5vw; padding: 2vh 2vw; background-color: #FFFFF0; justify-content: space-between;">
+	    			<div>
+	    				<div style="color: #020003; font-size: 36px">
+			    			{{ item.name }}
+			    		</div>
+
+			    		<div style="color: #020003; font-size: 18px; word-break: break-all;">
+			    			{{ item.description }}
+			    		</div>
+	    			</div>	    		
 	    		</div>
 
-	    		{% if item.author == request.user.useraccount %}
-	    		<div>
-	    			<a href="modify_item_{{ item.itemid }}">Edit Item</a>
+	    		<div class="flex_box_col" style="width: 20%; margin: 0 1.25vw; justify-content: space-between;">
+
+	    			<div class="flex_box_col" style="height: 50%; padding: 1.5vh 1.5vw; background-color: #FFFFF0;">
+		    			<div style="font-size: 36px">Quick Buy</div>
+		    			<div class="flex_box_col" style="margin: .5vh 0; justify-content: space-between;">
+		    				{% if best_price %}
+		    					<div class="flex_box_col" style="margin: .5vh 0">
+				    				<div class="flex_box_col" style="margin: .5vh 0">
+				    					<div style="font-size: 18px"> Best Price</div>
+				    					<div>${{ best_price.price }} [{{ best_price.quantity }}]</div>
+				    					<div>Sold by <a href="/profile_{{ best_price.seller.username }}">{{ best_price.seller.username }}</a></div>
+				    					<div><a href="/cart">Add to Cart</a></div>
+			    					</div>
+
+				    				<div class="flex_box_col" style="margin: .5vh 0">
+				    					<div style="font-size: 18px"> Best Price</div>
+				    					<div>${{ best_price.price }} [{{ best_price.quantity }}]</div>
+				    					<div>Sold by <a href="/profile_{{ best_price.seller.username }}">{{ best_price.seller.username }}</a></div>
+				    					<div><a href="/cart">Add to Cart</a></div>
+				    				</div>
+				    			</div>
+			    			{% else %}
+			    				No Listings
+		    				{% endif %}
+	    				</div>
+	    			</div>
+
+	    			<div class="flex_box_col" style="padding: 1.5vh 1.5vw; background-color: #FFFFF0;">
+	    				<div class="flex_box_col" style="padding: 1vh 0vw; justify-content: space-between;">
+							<div style="margin: 1vh 0;">
+				    			Author: <a href="/profile_{{item.author.username}}">{{item.author.username}}</a>
+					    		{% if item.author.username == request.user.useraccount.username %}
+					    			| <a href="modify_item_{{item.itemid}}">Edit</a>
+					    		{% endif %}
+					    	</div>
+					    </div>
+	    			</div>
+
+					<div class="flex_box_col" style="padding: 1.5vh 1.5vw; background-color: #FFFFF0;">
+						<div class="flex_box_col" style="padding: 1vh 0vw; justify-content: space-between;">
+		    				{% if listing %}
+				    				<div class="flex_box_col" style="justify-content: space-around;">
+				    					You are selling this item:
+				    				</div>
+
+				    				<div>
+				    					${{ listing.price }} [{{ listing.quantity }} left]
+				    				</div>
+
+				    				<div class="flex_box_row">
+				    					<a href="modify_listing_{{listing.id}}">Edit</a> | <a href="drop_listing_{{listing.id}}">Delete</a>
+				    				</div>
+				    			
+			    			{% else %}
+			    				<a href="add_listing_{{item.itemid}}">Create a Listing</a>
+							{% endif %}
+						</div>
+	    			</div>	
+
 	    		</div>
-	    		{% endif %}
-	    	</div>	
+			</div>	
 		</div>
 
-		<div>
-			<div>
-				{% if listing %}
-		    		<p>You are selling this item:</p>
-		    		<p><label>Price: </label>{{ listing.price }}</p>
-					<p><label>Quantity: </label>{{ listing.quantity }}</p>
-					<p>
-						<a href="modify_listing_{{listing.id}}">Edit</a>
-						or 
-						<a href="drop_listing_{{listing.id}}">Delete</a>
-					</p>
-				{% else%}
-					<p><a href="add_listing_{{item.itemid}}">Create a Listing</a></p>
-				{% endif %}
-	    	</div>
-	    	{% for listing in listings %}
-	    		{% if listing.seller.userid != request.user.useraccount.userid %}
-	    		<div>
-	    			<div>
-	    				<label>Seller: </label><a href="/profile_{{listing.seller.username}}">{{ listing.seller.username }}</a>
-						<label>Price: </label>{{ listing.price }}
-						<label>Quantity: </label>{{ listing.quantity }}
-						<a href="/cart">Add to Cart</a>
+		<div class="flex_box_row" style="margin: 5vh 0vw; justify-content: space-between;">
 
+			<div class="flex_box_col" style="width:49%;">
+				<div class="section_options" >
+					<div class="section">
+						{{listings|length}} Other Listing{% if listings|length != 1 %}s{% endif %}
 					</div>
-	    		</div>
-	    		{% endif %}
-	    	{% empty %}
-	    		<div>
-	    			Out of Stock
-	    		</div>
-			{% endfor %}
-    	</div>
+				</div>
+			    	{% for listing in listings %}
+			    		{% if listing.seller.userid != request.user.useraccount.userid %}
+			    		<div class="search_result" style="padding: 2vh 1vw">
+			    			<label>Seller: </label><a href="/profile_{{listing.seller.username}}">{{ listing.seller.username }}</a>
+							<label>Price: </label>{{ listing.price }}
+							<label>Quantity: </label>{{ listing.quantity }}
+							<a href="/cart">Add to Cart</a>
+			    		</div>
+			    		{% endif %}
+					{% endfor %}
+	    	</div>
+
+	    	<div class="flex_box_col" style="width:49%;">
+				<div class="section_options" >
+					<div class="section">
+						Reviews
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 {% endblock content %}

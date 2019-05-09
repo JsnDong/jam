@@ -1,43 +1,53 @@
 {% extends "base.html" %}
 
-{% block title%}Store{% endblock title%}
+{% block title%}Listings{% endblock title%}
 
 {% block content %}
-	<div>
-		<h2>Store</h2>
-	</div>
+	<div name="listings">
+		<div name="listings_header">
+			<h2>
+				{% if user == request.user.useraccount %}
+					My
+				{% else %}
+					{{ user.username }}'{% if user.username|slice:"-1:" != "s" %}s{% endif %}
+				{% endif %}
+				Listings
+			</h2>
 
-	<div>
-		<form action="add">
-			<input type="submit" value="Add Item">
-		</form>
-	</div>
+			{% if user == request.user.useraccount %}
+				<a href="/add_item">Add an Item</a>
+			{% endif %}
+		</div>
 
-	<div>
-		{% for listing in listings %}
-			<div class = "lists">
-				<div style="width: 100px; height: 100px">
-					<img src="{{ listing.0.thumbnail.url }}">
+		<div name="listings_view">
+			{% for listing in user.sells_set.all %}
+				<div name="listing" class = "lists">
+					<div name="thumbnail" style="width: 100px; height: 100px">
+						<img src="{{ listing.item.thumbnail.url }}">
+					</div>
+					<div name="details">
+						<div class = "item_details">
+							<a href="/item_{{ listing.item.itemid }}">{{ listing.item.name }}</a>
+							<p>{{listing.item.description}}</p>
+						</div>
+
+						<div class = "listing_details">
+							<label>Price: $</label>{{ listing.price}}
+							<label>Quantiy: </label>{{ listing.quantity}}
+						</div>
+
+						<div class = "options">
+						{% if user == request.user.useraccount %}
+							<a href="modify_listing_{{listing.id}}">Edit</a>
+							or
+							<a href="drop_listing_{{listing.id}}">Delete</a>
+						{% else %}
+							<a href="">Add to Cart</a>
+						{% endif %}
+						</div>
+					</div>
 				</div>
-				<div>
-					<div class = "item_name">
-						<a href="/item_{{listing.0.itemid}}">{{ listing.0.name }}</a>
-					</div>
-
-					<div class = "item_descr">
-						<label>Quantiy: </label>{{ listing.1.quantity}}
-						<label>Price: $</label>{{ listing.1.price}}
-					</div>
-
-					<div class = "item_descr">
-						{{ listing.0.description }}
-					</div>
-					<div class = "navbar">
-						<a href="drop_{{listing.0.itemid}}">Delete</a>
-						<a href="modify_{{listing.0.itemid}}">Edit</a>
-					</div>
-				</div>
-			</div>
-		{% endfor %}
+			{% endfor %}
+		</div>
 	</div>
 {% endblock content %}
