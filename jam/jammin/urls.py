@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from . import views
+from . import views, viewsM
 
 urlpatterns = [
 	re_path(r'^$',\
@@ -51,6 +51,14 @@ urlpatterns = [
 		    views.user_store,\
 		    name="user_store"),
 
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/orders',\
+			viewsM.user_orders,\
+			name="orders"),
+
+	re_path(r'add_to_cart_(?P<itemid>[0-9]+)_(?P<author>[0-9]+)',\
+			viewsM.add_to_cart,\
+			name="add_to_cart"),
+
 	path('signup/', views.user_signup, name='user_signup'),
 
 	path('login/', views.user_login, name='user_login'),
@@ -62,21 +70,21 @@ urlpatterns = [
 	path('app_confirm/', views.app_confirm, name='application_confirmation'),
 
 	path('employee_login/', views.employee_login, name='employee_login'),
-	path('cart/', views.user_cart, name='cart'),
-	path('add_to_cart_<int:itemid>_<int:author>', views.add_to_cart, name="add_to_cart"),
-	path('cart/inc_cart_item_<int:itemid>_<int:seller>', views.inc_cart_item, name="inc_cart_item"),
-	path('cart/dec_cart_item_<int:itemid>_<int:seller>', views.dec_cart_item, name="dec_cart_item"),
-	path('cart/delete_cart_item_<int:itemid>_<int:seller>', views.delete_cart_item, name='delete_cart_item'),
-	path('checkout', views.checkout, name="checkout"),
-	path('checkout_address_<int:id>', views.checkout_address, name="checkout_address"),
-	path('checkout_shipping_<int:orderid>_<int:shipid>', views.checkout_shipping, name="checkout_shipping"),
-	path('checkout_card_<int:orderid>_<int:id>', views.checkout_card, name="checkout_card"),
-	path('cancel_checkout_<int:orderid>', views.cancel_checkout, name="cancel_checkout"),
-	path('cancel_checkout_no_order', views.cancel_checkout_no_order, name="cancel_checkout_no_order"),
+	path('cart/', viewsM.user_cart, name='cart'),
+	# path('add_to_cart_<int:itemid>_<int:author>', viewsM.add_to_cart, name="add_to_cart"),
+	path('cart/inc_cart_item_<int:itemid>_<int:seller>', viewsM.inc_cart_item, name="inc_cart_item"),
+	path('cart/dec_cart_item_<int:itemid>_<int:seller>', viewsM.dec_cart_item, name="dec_cart_item"),
+	path('cart/delete_cart_item_<int:itemid>_<int:seller>', viewsM.delete_cart_item, name='delete_cart_item'),
+	path('checkout', viewsM.checkout, name="checkout"),
+	path('checkout_address_<int:id>', viewsM.checkout_address, name="checkout_address"),
+	path('checkout_shipping_<int:orderid>_<int:shipid>', viewsM.checkout_shipping, name="checkout_shipping"),
+	path('checkout_card_<int:orderid>_<int:id>', viewsM.checkout_card, name="checkout_card"),
+	path('cancel_checkout_<int:orderid>', viewsM.cancel_checkout, name="cancel_checkout"),
+	path('cancel_checkout_no_order', viewsM.cancel_checkout_no_order, name="cancel_checkout_no_order"),
 	path('<slug:username>_profile/payment/', views.addview_card, name="view/add_card"),
 	path('<slug:username>_profile/address/', views.addview_address, name="view/add_address"),
 	path('<slug:username>_profile/payment/drop_<int:id>', views.drop_card, name="drop_card"),
-	path('<slug:username>_profile/address/drop_<int:id>', views.drop_addr, name="drop_addr"),
-	path('<slug:username>_profile/orders', views.user_orders, name="orders")
+	path('<slug:username>_profile/address/drop_<int:id>', views.drop_addr, name="drop_addr")
+	# path('<slug:username>_profile/orders', viewsM.user_orders, name="orders")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
