@@ -5,7 +5,11 @@
 {% block content %}
 	<div class="content_body">
 		<div id="highlights">
-			<h2>Popular</h2>
+			<div class="section_options">
+				<div class="section">
+					Popular
+				</div>
+			</div>
 			<div class="item_highlight">
 				{% for item in most_viewed %}
 						<a href="item_{{ item.itemid }}">
@@ -15,10 +19,8 @@
 						</a>
 				{% endfor %}
 			</div>
-
-			<div name="most_purchased">
-				<h2>Bestsellers</h2>
-			</div>
 		</div>
 	</div>
 {% endblock content%}
+
+card|slice:"-4:"

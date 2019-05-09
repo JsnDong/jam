@@ -1,25 +1,26 @@
 {% extends "base.html" %}
+
+{% block title %}Login | Jammin{% endblock title %}
+
 {%block content%}
-    <h2>Login</h2>
+    <div class="section_options">
+        <div class="section">
+            Login
+        </div>
+    </div>
 
-    <p>
-        {% if login_form.errors %}
-            Invalid Login Credentials
-        {% endif %}
-    </p>
-
-	<form action="" method="POST" class = "form_sty">
+	<form class="flex_box_col" style="color: #FFFFF0" action="" method="POST">
 		{% csrf_token %}
-		<p>
-            <label>Email</label>
-            <br>
-            {{ login_form.email }}
-        </p>
-        <p>
+        <div class="flex_box_col">
+             <label>Email</label>
+             <div>{{ login_form.email }}</div>
+        </div>
+        <div class="flex_box_col">
             <label>Password</label>
-            <br>
-            {{ login_form.password }}
-        </p>
-        <input type="submit" value="Login">
+            <div>{{ login_form.password }}</div>
+        </div>
+        <div>
+            <input type="submit" value="Login">
+        </div>
     </form>
 {%endblock content%}

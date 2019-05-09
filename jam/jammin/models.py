@@ -53,7 +53,7 @@ class UserAccount(models.Model):
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
 
-	cart = models.ManyToManyField(Cart, through='CartHas')
+	cart = models.ManyToManyField('Cart', through='CartHas')
 
 	store = models.ManyToManyField('Item', through='Sells')
 	cards = models.ManyToManyField('Card')

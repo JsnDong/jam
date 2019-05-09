@@ -63,30 +63,23 @@ urlpatterns = [
 		    views.user_store,\
 		    name='user_store'),
 
-	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment$',\
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment/$',\
 		    views.add_view_card,\
 		    name='add_view_card'),
 
-	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address$',\
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address/$',\
 		    views.add_view_address,\
 		    name='add_view_address'),
 
-	#re_path(r'drop_card_(?P<card_id>[0-9]+)$',\
-			#views.drop_card,\
-			#name="drop_card"),
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment/drop_card_(?P<card_id>[0-9]+)$',\
+			views.drop_card,\
+			name="drop_card"),
 
-	#re_path(r'drop_address_(?P<address_id>[0-9]+)$',\
-			#views.drop_addr,\
-			#name="drop_addr"),
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address/drop_address_(?P<address_id>[0-9]+)$',\
+			views.drop_address,\
+			name="drop_address"),
 
-	re_path(r'^cart/$',\
-			views.view_cart,\
-			name='view_cart'),
-
-	re_path(r'^order/$',\
-			views.view_order,\
-			name='view_order'),
-=======
+	path('cart/', views.user_cart, name='cart'),
 	path('add_to_cart_<int:itemid>_<int:author>', views.add_to_cart, name="add_to_cart"),
 	path('cart/inc_cart_item_<int:itemid>_<int:seller>', views.inc_cart_item, name="inc_cart_item"),
 	path('cart/dec_cart_item_<int:itemid>_<int:seller>', views.dec_cart_item, name="dec_cart_item"),
@@ -97,6 +90,6 @@ urlpatterns = [
 	path('checkout_card_<int:orderid>_<int:id>', views.checkout_card, name="checkout_card"),
 	path('cancel_checkout_<int:orderid>', views.cancel_checkout, name="cancel_checkout"),
 	path('cancel_checkout_no_order', views.cancel_checkout_no_order, name="cancel_checkout_no_order"),
->>>>>>> 875f8f10331de47a2cf274bb616b11b0d21cd0a8
+	path('profile_<slug:username>/orders', views.user_orders, name="orders")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

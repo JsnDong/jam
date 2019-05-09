@@ -32,7 +32,7 @@ def search_results(request, query):
 	listings = list()
 	for result in results:
 		all_listings = result.sells_set.all()
-		price = buyable.order_by("-price")
+		price = all_listings.order_by("-price")
 		best_price = price[0] if len(price) != 0 else None 
 		listings += [[result, best_price]]
 	results = listings
@@ -142,17 +142,21 @@ def add_view_card(request, username):
 	
 	return render(request, "add_view_card.html", {'user': user, 'cards': cards, 'card_form': card_form})
 
-def drop_card(request, username, id):
+def drop_card(request, username, card_id):
+	user = request.user.useraccount
 	if not request.user.is_authenticated or\
 		   request.user.useraccount.username != username:
 		return HttpResponseRedirect('/')
 
-	user = request.user.useraccount
-	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
-	
-	cardToDelete.delete()
+	cards = user.cards.all()
+	try:
+		card = cards.get(pk=card_id)
+	except:
+		raise Http404
 
-	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
+	user.cards.remove(card)
+
+	return HttpResponseRedirect(reverse('add_view_card', kwargs={'username': user.username}))
 
 def add_view_address(request, username):
 	user = request.user.useraccount
@@ -182,7 +186,7 @@ def add_view_address(request, username):
 	
 	return render(request, "add_view_address.html", {'user': user, 'addresses': addresses, 'address_form': address_form})
 
-def drop_address(request, username, id):
+def drop_address(request, username, address_id):
 	if not request.user.is_authenticated or\
 		   request.user.useraccount.username != username:
 		return HttpResponseRedirect('/')
@@ -361,14 +365,15 @@ def add_to_cart(request, itemid, author):
 		except (Exception):
 			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
 			try:
-				cart_t = request.user.useraccount.cart.filter(ordered=False)
-				cartboi = models.CartHas.objects.filter(cart=cart_t[0])
+				cart_t = request.user.useraccount.cart.get(ordered=False)
+				cartboi = models.CartHas.objects.filter(cart=cart_t)
 				for boi in cartboi:
 					cart = cartboi[0].cart.id
 				x = cart
 			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
 			except (Exception):
 				cart = models.Cart.objects.create(total=0).id
+			x = y
 			carthas = models.CartHas.objects.create(quantity=quantity, user_id=user, item_id=item, seller_id=seller, cart_id=cart)
 		cart = models.Cart.objects.get(id = cart)
 		price = models.Sells.objects.get(seller_id = seller, item_id = item).price
@@ -381,8 +386,8 @@ def add_to_cart(request, itemid, author):
 def item_change_cart_quantity(request, itemid, author, quantity):
 	if request.user.is_authenticated:
 		user = request.user.useraccount
-		cart_t = user.cart.filter(ordered=False)
-		carthass = models.CartHas.objects.filter(cart=cart_t[0], item_id = itemid, seller_id = author)
+		cart_t = user.cart.get(ordered=False)
+		carthass = models.CartHas.objects.filter(cart=cart_t, item_id=itemid, seller_id=author)
 		carthas = carthass[0]
 		if quantity == 2:
 			quantity = (-1)*carthas.quantity

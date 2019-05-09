@@ -25,7 +25,7 @@ SHIPPING_CHOICES = (
 DELIVERY_STATUS_CHOICES = (
 	(None, 'SELECT'),
 	('processing', 'PROCESSING'),
-	('transit', 'IN TRANSIT')
-	('shippped', 'SHIPPED'),
+	('transit', 'IN TRANSIT'),
+	('shipped', 'SHIPPED'),
 	('delivered', 'DELIVERED')
 )
