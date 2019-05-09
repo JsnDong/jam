@@ -4,6 +4,9 @@
 
 <p class="confirm">Thank you for shopping with Jammin!</p>
 <div>
+	{% if total == 0 %}
+	<h2>Error Completing Order. You can't buy something that is currently not in store. Check your Cart.</h2>
+	{% else %}
 	<h2>Reciept: Order ID: {{order.orderid}}</h2>
 	<h3>Date: {{order.date_placed}}</h3>
 	<h3>Subtotal: {{order.cart.total}}</h3>
@@ -14,6 +17,7 @@
 	<h3>Delivery Tracking Code: {{order.delivery.tracking_code}}</h3>
 	<h3>Delivery Carrier: {{order.delivery.carrier}}</h3>
 	<h3>Status: {{order.delivery.status}}</h3>
+	{% endif %}
 </div>
 <a href="/">Return to Landing</a>
 {%endblock content%}
