@@ -353,6 +353,12 @@ def checkout_card(request, orderid, id):
 	order.complete = 'True'
 	order.delivery = models.Delivery.objects.create(tracking_code=str(orderid*100), carrier="FedEx")
 	order.save()
+	cart = request.user.useraccount.cart.get(ordered='False')
+	# carthas = cart.cart_has.all()
+	# for item in carthas:
+	# 	listing = models.Sells.objects.get(seller_id=item.seller.id, item_id = item.itemid)
+	# 	listing.quantity = listing.quatity - order.item.quantity
+	# 	listing.save()
 	order.cart.ordered = 'True'
 	order.cart.save()
 	total = float(order.cart.total) + float(order.shipping.price)
@@ -402,16 +408,16 @@ def id_in_list(order, orders):
 def user_orders(request, username):
 	if not request.user.is_authenticated:
 		return HttpResponseRedirect('/')
-	# try:
-	carts = request.user.useraccount.cart.filter(ordered='True')
-	orders = list()
-	total = list()
-	for cart in carts:
-		temp = models.Order.objects.filter(cart=cart, complete='True')
-		if not id_in_list(temp[0], orders):
-			orders += temp
-	# except (Exception):
-	# 	orders = list()
+	try:
+		carts = request.user.useraccount.cart.filter(ordered='True')
+		orders = list()
+		total = list()
+		for cart in carts:
+			temp = models.Order.objects.filter(cart=cart, complete='True')
+			if not id_in_list(temp[0], orders):
+				orders += temp
+	except (Exception):
+		orders = list()
 	return render(request, 'user_orders.html', {'orders' : orders, 'username': username})
 
 def drop_card(request, username, id):
