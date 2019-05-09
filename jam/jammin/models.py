@@ -30,10 +30,6 @@ class Item(models.Model):
 	def __str__(self):
 		return self.name
 
-	def best_price(self):
-		listings = self.sells_set.all()
-		return list(listings.order_by('-price'))
-
 	def save(self):
 		thumbnail_copy = ContentFile(self.image.read())
 		thumbnail_output = BytesIO()
@@ -68,23 +64,6 @@ class Review(models.Model):
 
 	def __str__(self):
 		return title
-
-class Cart(models.Model):
-	cart_has = models.ManyToManyField(Item, through='CartHas')
-	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
-	def __str__(self):
-		return str(self.cart_has)+self.total
-
-class CartHas(models.Model):
-	user = models.ForeignKey('UserAccount', models.CASCADE,
-								null=False)
-	item = models.ForeignKey('Item', models.CASCADE, blank=True,
-								null=True)
-	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
-	quantity = models.IntegerField(blank=True, null=True,
-								   validators=[MinValueValidator(0)])
-	def __str__(self):
-		return ", ".join([str(detail) for detail in [user, item, quantity]])
 '''
 
 class Account(AbstractBaseUser):

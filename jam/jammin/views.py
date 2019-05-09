@@ -95,7 +95,7 @@ def index(request):
 
 	most_viewed = list(all_items.order_by('-views'))[:10]
 
-	return render(request, 'index.html', {'account': request.user, 'most_viewed': most_viewed})
+	return render(request, 'index.html', {'most_viewed': most_viewed})
 
 def search(request):
 	if request.method == 'POST' and\
@@ -266,3 +266,6 @@ def drop_listing(request, listing_id):
 	listing.delete()
 
 	return HttpResponseRedirect(reverse("view_item", kwargs={'item_id': listing.item.itemid}))
+
+def view_cart(request):
+	return HttpResponseRedirect('/profile_'+request.user.useraccount.username)

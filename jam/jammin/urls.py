@@ -11,7 +11,7 @@ urlpatterns = [
 			views.index,
 			name='index'),
 
-	re_path(r'^query?$',\
+	re_path(r'^query$',\
 			views.search,\
 			name="search"),
 
@@ -47,9 +47,13 @@ urlpatterns = [
 			views.user_profile,\
 			name="user_profile"),
 
-	re_path(r'profile_(?P<username>[A-Za-z0-9]+)/store',\
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/store$',\
 		    views.user_store,\
 		    name="user_store"),
+
+	re_path(r'^cart/$',\
+			views.view_cart,\
+			name='view_cart'),
 
 	path('signup/', views.user_signup, name='user_signup'),
 
