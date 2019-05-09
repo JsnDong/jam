@@ -272,9 +272,11 @@ def add_to_cart(request, itemid, author):
 		except (Exception):
 			#ITEM NOT IN CART BUT CART EXISTS FOR THIS USER
 			try:
-				cartboi = models.CartHas.objects.filter(user_id = user)
-				cart_all = cartboi.filter(ordered=False)
-				cart = cartboi[0].cart.id
+				cart_t = request.user.useraccount.cart.filter(ordered=False)
+				cartboi = models.CartHas.objects.filter(cart=cart_t[0])
+				for boi in cartboi:
+					cart = cartboi[0].cart.id
+				x = cart
 			#ITEM NOT IN CART AND NO CART EXISTS FOR THE USER
 			except (Exception):
 				cart = models.Cart.objects.create(total=0).id
@@ -355,17 +357,16 @@ def checkout_card(request, orderid, id):
 	order.complete = 'True'
 	order.delivery = models.Delivery.objects.create(tracking_code=str(orderid*100), carrier="FedEx")
 	order.save()
-	cart = request.user.useraccount.cart.get(ordered='False')
-	carthas = cart.cart_has.all()
-	# TODO: REMOVE ITEM FROM LISTING BECAUSE PURCHASED
-	# for item in carthas:
-	# 	listing = models.Sells.objects.get(seller=item.seller, item = item.item)
-	# 	x = item.seller.userid
-	# 	z = item.item.itemid
-	# 	d = listing.quantity
-	# 	x = y
-	# 	listing.quantity = listing.quantity - item.quantity
-	# 	listing.save()
+	cart = order.cart
+	carthas = models.CartHas.objects.filter(cart=cart)
+	for item in carthas:
+		x = item.item.itemid
+		listing = models.Sells.objects.get(seller_id=item.seller.id, item = item.item)
+		listing.quantity = listing.quantity - item.quantity
+		if float(listing.quantity) < 0:
+			cancel_checkout(request, orderid)
+			return render(request, 'order_confirm.html', {'order' : order, 'total' : 0})
+		listing.save()
 	order.cart.ordered = 'True'
 	order.cart.save()
 	total = float(order.cart.total) + float(order.shipping.price)
