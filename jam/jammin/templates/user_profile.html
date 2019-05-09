@@ -18,6 +18,14 @@
 			<div>
 				<a href="store" style="color: #FFFFF0; font-weight: bold">Your Listings</a>
 			</div>
+
+			<div>
+				<a href="payment" style="color: #FFFFF0; font-weight: bold">Your Payments</a>
+			</div>
+
+			<div>
+				<a href="address" style="color: #FFFFF0; font-weight: bold">Your Addresses</a>
+			</div>
 		{% else %}
 			<div name="listings">
 				{% if user.sells_set.all|length != 0 %}

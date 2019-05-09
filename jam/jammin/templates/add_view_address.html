@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title%}Saved Addresses{% endblock title%}
+
+{% block content %}
+	<script type="text/javascript">
+		function showHide(){
+			var button = document.getElementById("add_address");
+			var hiddeninputs = document.getElementsByClassName("add_address_input");
+
+			for(var i = 0; i != hiddeninputs.length; i++) {
+				hiddeninputs[i].style.display = "block";
+			}
+		}
+	</script>
+
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				{{ addresses|length }} Saved Address{% if addresses|length != 1%}es{% endif %}
+			</div>
+
+			<div class="options">
+				<button type="button" id="add_address" onclick="showHide()" style="background: transparent; border: none; padding: 0; cursor: pointer; color: #FFFFF0">Add Address</button>
+			</div>
+		</div>
+
+		<div class="flex_box_col">
+			<form id="addaddr" action="" enctype="multipart/form-data" method="post" style="color: #FFFFF0">
+				{% csrf_token %}
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>Name</label>
+						<div>{{ address_form.name }}</div>
+					</div>
+				</div>
+				
+				<div class="add_address_input" style="display: none;">	
+					<div class="flex_box_col">
+						<label>Street</label>
+						<div>{{ address_form.street }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>City</label>
+						<div>{{ address_form.city }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>State/Province</label>
+						<div>{{ address_form.stateprovince }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>Country</label>
+						<div>{{ address_form.country }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>Zip Code</label>
+						<div>{{ address_form.zipcode }}</div>
+					</div>
+				</div>
+				<input class="add_address_input" type="submit" style="display: none;" value="Save">
+			</form>
+		</div>
+
+		<div class="flex_box_row">
+			{% for address in addresses %}
+				<div class="flex_box_col" style="background-color: #FFFFF0;">
+					<div>
+						{{ address.name }}
+					</div>
+
+					<div>
+						{{ address.street }}
+					</div>
+
+					<div>
+						{{ address.city }}, {{address.stateprovince}}
+					</div>
+
+					<div>
+						{{ address.country }}
+					</div>
+
+					<div>
+						{{ address.zipcode }}
+					</div>
+
+					<div>
+						<a href="modify_{{address.id}}">Edit</a> | <a href="drop_{{address.id}}">Delete</a> 
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock content %}

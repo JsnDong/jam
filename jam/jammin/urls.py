@@ -7,6 +7,18 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+	path('signup/', views.user_signup, name='user_signup'),
+
+	path('login/', views.user_login, name='user_login'),
+
+	path('logout/', views.account_logout, name='logout'),
+
+	path('employee_app/', views.employee_app, name='employee_application'),
+
+	path('app_confirm/', views.app_confirm, name='application_confirmation'),
+
+	path('employee_login/', views.employee_login, name='employee_login'),
+
 	re_path(r'^$',\
 			views.index,
 			name='index'),
@@ -51,21 +63,24 @@ urlpatterns = [
 		    views.user_store,\
 		    name="user_store"),
 
-	re_path(r'^cart/$',\
-			views.view_cart,\
-			name='view_cart'),
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/payment$',\
+		    views.add_view_card,\
+		    name="add_view_card"),
 
-	path('signup/', views.user_signup, name='user_signup'),
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/address$',\
+		    views.add_view_address,\
+		    name="add_view_address")
 
-	path('login/', views.user_login, name='user_login'),
+	#re_path(r'drop_card_(?P<card_id>[0-9]+)$',\
+			#views.drop_card,\
+			#name="drop_card"),
 
-	path('logout/', views.account_logout, name='logout'),
+	#re_path(r'drop_address_(?P<address_id>[0-9]+)$',\
+			#views.drop_addr,\
+			#name="drop_addr"),
 
-	path('employee_app/', views.employee_app, name='employee_application'),
-
-	path('app_confirm/', views.app_confirm, name='application_confirmation'),
-
-	path('employee_login/', views.employee_login, name='employee_login'),
-	
+	#re_path(r'^cart/$',\
+			#views.view_cart,\
+			#name='view_cart')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

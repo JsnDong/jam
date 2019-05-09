@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+#from django_countries.fields import CountryField
 
 from .managers import AccountManager, EmployeeManager
 from .choices import DEPT_CHOICES
@@ -55,6 +56,22 @@ class Item(models.Model):
 		super(Item, self).save()
 
 '''
+class CartHas(models.Model):
+	user = models.ForeignKey('UserAccount', models.CASCADE,
+								null=False)
+	item = models.ForeignKey('Item', models.CASCADE, blank=True,
+								null=True)
+	cart = models.ForeignKey('Cart', models.CASCADE, blank=True, null=False)
+	quantity = models.IntegerField(blank=True, null=True,
+								   validators=[MinValueValidator(0)])
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [user, item, quantity]])
+class Cart(models.Model):
+	cart_has = models.ManyToManyField(Item, through='CartHas')
+	total = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
+	def __str__(self):
+		return str(self.cart_has)+self.total
+
 class Review(models.Model):
 	rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1),
 										  				  MaxValueValidator(5)])
@@ -108,7 +125,10 @@ class UserAccount(models.Model):
 							  validators=[MinValueValidator(100000000),
 										  MaxValueValidator(999999999)])
 	username = models.CharField(max_length=255, unique=True)
-	store = models.ManyToManyField(Item, through='Sells')
+	store = models.ManyToManyField('Item', through='Sells')
+
+	cards = models.ManyToManyField('Card')
+	addresses = models.ManyToManyField('Address')
 
 	#reviewed = models.ForeignKey('Review', null=True)
 	#cart = models.ManyToManyField(Cart, through='CartHas')
@@ -157,3 +177,17 @@ class EmployeeApp(models.Model):
 
 	def __str__(self):
 		return self.email
+
+class Card(models.Model):
+	cardholder = models.CharField(max_length=200, blank=False, validators=[RegexValidator(r'^[A-Za-z \']+$')])
+	card_number = models.CharField(max_length=16, blank=False, validators=[RegexValidator(r'^[0-9]{16}$')])
+	expiry_date = models.CharField(max_length=5, blank=False, validators=[RegexValidator(r'^(1[0-2])|(0?[1-9])/[0-9]{2}$')])
+	cvn = models.CharField(max_length=3, blank=False, validators=[RegexValidator(r'^[0-9]{3}$')])
+
+class Address(models.Model):
+	name =  models.CharField(max_length=255, blank=False, validators=[RegexValidator(r'^[A-Za-z \']+$')])
+	street = models.CharField(max_length=255, blank=False)
+	stateprovince =  models.CharField(max_length=255, blank=False, validators=[RegexValidator(r'^[A-Za-z \']+$')])
+	city = models.CharField(max_length=255, blank=False, validators=[RegexValidator(r'^[A-Za-z \']+$')])
+	country =  models.CharField(max_length=255, blank=False, validators=[RegexValidator(r'^[A-Za-z \']+$')])
+	zipcode = models.CharField(max_length=5, blank=False, validators=[RegexValidator(r'^[0-9]{5}$')])

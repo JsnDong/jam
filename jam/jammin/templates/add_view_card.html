@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title%}Saved Cards{% endblock title%}
+
+{% block content %}
+	<script type="text/javascript">
+		function showHide(){
+			var button = document.getElementById("add_address");
+			var hiddeninputs = document.getElementsByClassName("add_address_input");
+
+			for(var i = 0; i != hiddeninputs.length; i++) {
+				hiddeninputs[i].style.display = "block";
+			}
+		}
+	</script>
+
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				{{ cards|length }} Saved Card{% if cards|length != 1%}s{% endif %}
+			</div>
+
+			<div class="options">
+				<button type="button" id="add_address" onclick="showHide()" style="background: transparent; border: none; padding: 0; cursor: pointer; color: #FFFFF0">Add Card</button>
+			</div>
+		</div>
+
+		<div class="flex_box_col">
+			<form id="addaddr" action="" enctype="multipart/form-data" method="post" style="color: #FFFFF0">
+				{% csrf_token %}
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>Name</label>
+						<div>{{ card_form.cardholder }}</div>
+					</div>
+				</div>
+				
+				<div class="add_address_input" style="display: none;">	
+					<div class="flex_box_col">
+						<label>Card Number</label>
+						<div>{{ card_form.card_number }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>Expiry Date</label>
+						<div>{{ card_form.expiry_date }}</div>
+					</div>
+				</div>
+
+				<div class="add_address_input" style="display: none;">
+					<div class="flex_box_col">
+						<label>CVN</label>
+						<div>{{ card_form.cvn }}</div>
+					</div>
+				</div>
+
+				<input class="add_address_input" type="submit" style="display: none;" value="Save">
+			</form>
+		</div>
+
+		<div class="flex_box_row">
+			{% for card in cards %}
+				<div class="flex_box_col" style="background-color: #FFFFF0;">
+					<div>
+						{{ card.cardholder }}
+					</div>
+
+					<div>
+						{{ card.card_number }}
+					</div>
+
+					<div>
+						{{ card.expiry_date }}
+					</div>
+
+					<div>
+						{{ card.cvn }}
+					</div>
+
+					<div>
+						<a href="modify_{{card.id}}">Edit</a> | <a href="drop_{{card.id}}">Delete</a> 
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock content %}

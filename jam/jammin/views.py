@@ -131,7 +131,6 @@ def user_profile(request, username):
 
 	return render(request, "user_profile.html", {'user': user})
 
-
 def user_store(request, username):
 	try:
 		user = models.UserAccount.objects.get(username=username)
@@ -154,7 +153,6 @@ def view_item(request, item_id):
 		listing = models.Sells.objects.get(seller=user, item=item)
 	except:
 		listing = None
-
 
 	listings = models.Sells.objects.filter(item=item).exclude(seller=user)
 	best_price = listings.order_by("-price")[0] if len(list(listings)) > 0 else None
@@ -267,5 +265,109 @@ def drop_listing(request, listing_id):
 
 	return HttpResponseRedirect(reverse("view_item", kwargs={'item_id': listing.item.itemid}))
 
+'''
 def view_cart(request):
 	return HttpResponseRedirect('/profile_'+request.user.useraccount.username)
+
+def user_cart(request, username):
+	# if not request.user.is_authenticated or\
+	# 	   request.user.useraccount.username != username:
+	# 	return HttpResponseRedirect('/')
+	#
+	# user = request.user.useraccount
+	# cart = user.cart.all()
+	# listings = list()
+	# for item in cart:
+	# 	sells = models.Sells.objects.get(item=item.itemid, seller=user.userid)
+	# 	listing = [item, sells]
+	# 	listings += [listing]
+	#
+	# return render(request, "user_store.html", {'account': request.user, 'listings':listings})
+
+	return render(request, 'cart.html')
+
+def add_to_cart(request, username, itemid):
+	return render(request, 'cart.html')
+'''
+
+def add_view_card(request, username):
+	user =request.user.useraccount
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	cards = user.cards.all()
+	
+	if request.method == 'POST':
+		card_form = forms.PaymentForm(request.POST)
+		if card_form.is_valid():
+			card = card_form.save(commit=False)
+			try:
+				card = models.Card.objects.get(card_number=card.card_number,\
+											 cardholder=card.cardholder,\
+											 expiry_date=card.expiry_date,\
+											 cvn=card.cvn)
+			except:
+				card.save()
+			user.cards.add(card)
+			user.save()
+			return HttpResponseRedirect(reverse('add_view_card', kwargs={'username': user.username}))
+	else:
+		card_form = forms.PaymentForm()
+	
+	return render(request, "add_view_card.html", {'user': user, 'cards': cards, 'card_form': card_form})
+
+'''
+def drop_card(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	cardToDelete = models.Card.objects.get(pk=id,user_account=user)
+	
+	cardToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_card', kwargs={'username': user.username}))
+'''
+
+def add_view_address(request, username):
+	user = request.user.useraccount
+	if not request.user.is_authenticated:
+		return HttpResponseRedirect('/')
+	
+	addresses = user.addresses.all()
+	
+	if request.method == 'POST':
+		address_form = forms.AddressForm(request.POST)
+		if address_form.is_valid():
+			address = address_form.save(commit=False)
+			try:
+				address = models.Address.objects.get(name=address.name,\
+													 street=address.street,\
+													 stateprovince=address.stateprovince,\
+													 city=address.city,\
+													 country=address.country,\
+													 zipcode=address.zipcode)
+			except:
+				address.save()
+			user.addresses.add(address)
+			user.save()
+			return HttpResponseRedirect(reverse('add_view_address', kwargs={'username': user.username}))
+	else:
+		address_form = forms.AddressForm()
+	
+	return render(request, "add_view_address.html", {'user': user, 'addresses': addresses, 'address_form': address_form})
+
+'''
+def drop_address(request, username, id):
+	if not request.user.is_authenticated or\
+		   request.user.useraccount.username != username:
+		return HttpResponseRedirect('/')
+
+	user = request.user.useraccount
+	addrToDelete = models.Address.objects.get(pk=id,currentAccount=user)
+
+	addrToDelete.delete()
+
+	return HttpResponseRedirect(reverse('view/add_address', kwargs={'username': user.username}))
+'''

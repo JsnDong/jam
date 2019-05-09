@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import Item, Account, UserAccount, Sells, EmployeeApp#, Cart
+from .models import Item, Account, UserAccount, Sells, EmployeeApp, Card, Address#, Cart
 
 class AddItemForm(forms.ModelForm):
 	class Meta:
@@ -19,6 +19,27 @@ class AddItemForm(forms.ModelForm):
 		if dept == None:
 			raise forms.ValidationError('Select a category')
 		return dept
+class PaymentForm(forms.ModelForm):
+	class Meta:
+		model = Card
+		fields = ('card_number', 'expiry_date', 'cvn', 'cardholder')
+
+	def save(self, commit=True):
+		card = super().save(commit=False)
+		if commit:
+			card.save()
+		return card
+
+class AddressForm(forms.ModelForm):
+	class Meta:
+		model = Address
+		fields = ('name','street','zipcode','country', 'stateprovince', 'city')
+
+	def save(self, commit=True):
+		address = super().save(commit=False)
+		if commit:
+			address.save()
+		return address
 
 class AccountCreationForm(forms.ModelForm):
 	password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
