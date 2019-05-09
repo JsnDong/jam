@@ -1,150 +1,77 @@
 <!DOCTYPE html>
+
+{% load static %}
+
 <html>
     <head>
 	   <title>{% block title %}{% endblock title %}</title>
         <style>
-             h2{
-                color: white;
-             }
-             ul {
-              list-style-type: none;
-              margin: 0;
-              padding: 0px 0px 10px 0px;
-              overflow: hidden;
-              color: white;
-              width: 100%;
-            }
-            a{
-              color: white;
-              align-content: center;
-            }
-
-            li {
-              display: block;
-              text-decoration: none;
-            }
-
-            li a{
-              color: white;
-              align-content: center;
-            }
-            .navbar a:hover {
-              background-color: #111;
-            }
-            #logo{
-                color: white;
-                font-size: 300%;
-                width: 100%;
-                font-family: Georgia, Verdana, Segoe, sans-serif;
-            }
-            .top li{
-                float: left;
-                display: inline;
-            }
-            #search_bar{
-                width: 400px;
-                border: 3px solid #333;
-            }
-            .top form{
-                padding: 5px;
-                margin: 15px;
-
-            }
-            .top{
-                background-color: white;
-                width: 100%;
-                display: inline;
-            }
-            .navbar{
-                background-color: #333;
-                padding: 10px 100px 10px 10px;
-            }
-            .navbar li{
-                float: left;
-                padding: 10px 20px 10px 0px;
-                font-size: 120%;
-            }
-            .navbar a{
-                padding: 0px 0px;
-                color: white;
-            }
-            .lists{
-                background-color: #dee3ea;
-                border: 3px solid #b1b6bc;
-            }
-            .item_name{
-                padding: 5px 0px 5px 5px;
-                font-size: 115%;
-            }
-            .item_descr{
-                padding: 5px 0px 5px 5px;
-                color: grey;
-            }
-            form{
-                background-color: #dee3ea;
-                padding: 10px;
-            }
-            .confirm{
-                background-color: #dee3ea;
-                padding: 20px;
-                text-align: center;
-            }
+            @import url('https://fonts.googleapis.com/css?family=Sacramento');
         </style>
+
+        <link rel="stylesheet" href="{% static 'css/jammin.css' %}">
     </head>
+    <body>
+        <header class="boundaries">
+            <div id="logo_div">
+                <a href="/"><span id="logo">Jammin</span></a>
+            </div>
 
-    <body style = "background-color: #565656;">
-        <header>
-            <div>
-                <ul class="top">
-                    <li>
-                        <a href="/" id="logo">Jammin</a>
-                    </li>
-                    <li>
-                        <form action="/query" method="post">
-                            {% csrf_token %}
-                            <input type="text" name='query' placeholder="Search" id = "search_bar">
-                            <input type="submit" value="Find">
-                        </form>
-                    </li>
-                </ul>
-                <ul class = "navbar">
-                    {% if account.is_authenticated %}
-                        <li>
-                            <a>
-                                Hello, <a href="{{ account.useraccount.username }}_profile/">{{ account.name }}</a>
-                            </a>
-                        </li>
+            <form id="search_form" action="/query" method="post">
+                {% csrf_token %}
+                <div id="search_bar_text">
+                    <input id="search_text" type="text" name='query' placeholder="Search" value="{% block query %}{% endblock query %}">
+                </div>
+                <div id="search_bar_button">
+                    <input id="search_button" type="submit" value="Find">
+                </div>
+            </form>
 
-                        <li>
-                            <a href="/logout">Log Out</a>
-                        </li>
-                    {% else %}
-                        <li>
-                            <a href="/login">Login</a> or <a href="/signup">Sign Up</a>
-                        </li>
-                    {% endif %}
-                    <li>
-                        <a href="/cart">Cart</a>
-                    </li>
-                    <li>
-                        <a href='/' >Home</a>
-                    </li>
-                </ul>
+            <div class='nav_div'>
+                {% if request.user.is_authenticated %}
+                    <div id="profile">
+                        Hello,
+                        <a href="/profile_{{request.user.useraccount.username}}">
+                            <span class="nav_text">{{ request.user.name }}</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <div>
+                        <a href="/login">
+                            <span class="nav_text">Login</span>
+                        </a>
+                        or
+                        <a href="/signup">
+                            <span class="nav_text">Sign Up</span>
+                        </a>
+                    </div>
+                {% endif %}
+                |
+                <a href="/cart">
+                    <span class="nav_text">Cart</span>
+                </a>
+                {% if request.user.is_authenticated %}
+                    |
+                    <a href="/logout">
+                        <span class="nav_text">Log Out</span>
+                    </a>
+                {% endif %}
             </div>
         </header>
+
         {% block content %}
         {% endblock content %}
-        <br>
 
-        <footer>
-            <ul class = "navbar">
-                <li >
-                    <a href="/employee_login">Employees</a>
-                </li>
-                <li>
-                    <a href="/employee_app">Careers</a>
-                </li>
-            </ul>
+        <footer class="boundaries">
+            <div class="nav_div">
+                <a href="/employee_login">
+                    <span class="nav_text">Employees</span>
+                </a>
+                |
+                <a href="/employee_app">
+                    <span class="nav_text">Careers</span>
+                </a>
+            </div>
         </footer>
     </body>
 </html>

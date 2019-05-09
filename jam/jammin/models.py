@@ -33,11 +33,14 @@ class Item(models.Model):
 	dept = models.CharField(max_length=255, choices=DEPT_CHOICES, blank=False, default=None)
 	description = models.TextField(blank=True, null=True)
 
+	#reviews = models.ForeignKey('Review', null=True)
+
 	buys = models.PositiveIntegerField(default=0)
 	views = models.PositiveIntegerField(default=0) 
 
 	def __str__(self):
 		return self.name
+
 	def save(self):
 		thumbnail_copy = ContentFile(self.image.read())
 		thumbnail_output = BytesIO()
@@ -62,16 +65,14 @@ class Item(models.Model):
 
 		super(Item, self).save()
 
-
 class Sells(models.Model):
 	seller = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
 	item = models.ForeignKey('Item', on_delete=models.CASCADE)
 	price = models.DecimalField(max_digits=11, decimal_places=2, null=True)
 	quantity = models.IntegerField(validators=[MinValueValidator(1)])
 
-	# def __str__(self):
-	# 	return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
-
+	def __str__(self):
+		return ", ".join([str(detail) for detail in [seller, item, price, quantity]])
 
 class CartHas(models.Model):
 	user = models.ForeignKey('UserAccount', models.CASCADE,
@@ -99,7 +100,7 @@ class Cart(models.Model):
 
 class Delivery(models.Model):
 	tracking_code = models.CharField(max_length=6, blank=False)
-	status = models.CharField(max_length=255, blank=False, choices=DELIVERY_STATUS_CHOICES, default='processing')
+	status = models.CharField(max_length=255, blank=False, choices=DELIVERY_STATUS_CHOICES, default='delivered')
 	carrier = models.CharField(max_length=255, blank=False)
 	arrival_date = models.DateField(null=True)
 
@@ -115,12 +116,13 @@ class Order(models.Model):
 	complete = models.BooleanField(default='False', null=False)
 	delivery = models.ForeignKey('Delivery', models.CASCADE, null=True)
 
-
 class Account(AbstractBaseUser):
 	email = models.EmailField(max_length=255, unique=True)
 	name = models.CharField(max_length=255, blank=False)
 	surname = models.CharField(max_length=255, blank=False)
 	dob = models.DateField(null=True)
+
+	#reviews = models.ForeignKey('Review', null=True)
 
 	joined = models.DateField(auto_now_add=True)
 	seen = models.DateField(auto_now=True)

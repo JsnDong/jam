@@ -1,40 +1,85 @@
 {% extends "base.html" %}
 
-{% block title %}Search Results{% endblock title %}
+{% block title %}{{query}} | Search Results | Jammin{% endblock title %}
+
+{% block query %}{{query}}{% endblock query %}
 
 {% block content %}
-    <div style="width: 100%;padding: 0px 0px 0px 0px;">
-        <h2>
-            Search Results For: "{{search}}"
-        </h2>
-    </div>
-    
-    <div>
-        {% for item in result %}
-            <br>
-            <div class = "lists" style="width: 100px; height: 100px">
-                <img src="{{ item.thumbnail.url }}">
-            </div>
+    <div class="content_body">
 
-            <div>
-                <div class = "item_name">
-                    <a href="item_{{ item.itemid }}">{{ item.name }}</a>
-                </div>
-                <div class = "item_descr">
-                    {{ item.description }}
-                </div>
-                {% if item.author == request.user.useraccount %}
-                    <div style = "text-align: right">
-                        <a href="store/">Your Store</a>
-                    </div>
-                {% else %}
-                    <div style = "text-align: right">
-                        <a href="add_to_cart_{{item.itemid}}_{{item.author}}">Add to Cart</a>
-                    </div>
-                {% endif %}
+        <div class="section_options">
+            <div class="section">
+                {{ results|length }} Search Results For: "{{query}}"
             </div>
-        {% empty %}
-            No results found
-        {% endfor %}
+            {% if request.user.is_authenticated %}
+                <div class="options">
+                    <a href="/add_item">Add an Item</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="search_results">
+            {% for result in results %}
+            <div class="search_result">
+
+                <div class="flex_box_row" style="width: 65%;">
+                    <a href="/item_{{ result.0.itemid }}/">
+                        <div class="item_thumbnail_div" style="background: url({{ result.0.thumbnail.url }}) no-repeat center center">
+                            <img src="{{ item.thumbnail.url }}" style="visibility: hidden;">
+                        </div>
+                    </a>
+
+                    <div class="item_details_div">
+                        <div class="flex_box_col">
+                            <div>
+                                <a href="/item_{{ result.0.itemid }}">{{ result.0.name }}</a>
+                            </div>
+                            <div style="word-break: break-all;">
+                                {{ result.0.description|slice:":125" }}{% if result.0.description|length > 125 %}...{% endif %}
+                            </div>
+                        </div> 
+                        <div>
+                            Found in: <a href="query_{{ result.0.dept }}">{{ result.0.dept }}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex_box_row" style="width: 25%; margin: 0 2.5vw; justify-content: space-between;">
+                {% if result.1 %}
+                    <div class="item_details_div" style="width: 50%">
+                        <div>Best Price</div>
+                        <div>${{ result.1.price }} [{{ result.1.quantity }} left]</div>
+                        <div>Sold by <a href="/profile_{{ result.1.seller.username }}">{{ result.1.seller.username }}</a></div>
+                         {% if item.author == request.user.useraccount %}
+                            <div style = "text-align: right">
+                                <a href="store/">Your Store</a>
+                            </div>
+                        {% else %}
+                            <div style = "text-align: right">
+                                <a href="add_to_cart_{{result.0.itemid}}_{{result.0.author}}">Add to Cart</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="item_details_div" style="width: 50%">
+                        <div>Best Price</div>
+                        <div>${{ result.1.price }} [{{ result.1.quantity }} left]</div>
+                        <div>Sold by <a href="/profile_{{ result.1.seller.username }}">{{ result.1.seller.username }}</a></div>
+                         {% if item.author == request.user.useraccount %}
+                            <div style = "text-align: right">
+                                <a href="store/">Your Store</a>
+                            </div>
+                        {% else %}
+                            <div style = "text-align: right">
+                                <a href="add_to_cart_{{result.0.itemid}}_{{result.0.author}}">Add to Cart</a>
+                            </div>
+                        {% endif %}
+                        </div>
+                {% else %}
+                    No Listings
+                {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 {%endblock content%}

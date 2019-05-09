@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib.auth import views as auth_views
 
 from django.conf import settings
@@ -7,19 +7,61 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-	path('', views.index, name='index'),
-	path('query', views.search, name="search"),
-	path('query_<slug:query>', views.search_results, name='search_results'),
-	path('item_<int:itemid>/', views.view_item, name='view_item'),
-	path('item_<int:itemid>/add_listing', views.add_listing, name='view_item'),
+	re_path(r'^$',\
+			views.index,
+			name='index'),
+
+	re_path(r'^query$',\
+			views.search,\
+			name="search"),
+
+	re_path(r'^query_(?P<query>[A-Za-z0-9_]+)?$',\
+			views.search_results,\
+			name='search_results'),
+
+	re_path(r'^item_(?P<item_id>[0-9]+)/$',\
+			views.view_item,\
+			name='view_item'),
+
+	re_path(r'^add_item$',\
+			views.add_item,\
+			name="add_item"),
+
+	re_path(r'modify_item_(?P<item_id>[0-9]+)$',\
+			views.modify_item,\
+			name="modify_item"),
+
+	re_path(r'add_listing_(?P<item_id>[0-9]+)$',\
+			views.add_listing,\
+			name="add_listing"),
+
+	re_path(r'drop_listing_(?P<listing_id>[0-9]+)$',\
+			views.drop_listing,\
+			name="drop_listing"),
+
+	re_path(r'modify_listing_(?P<listing_id>[0-9]+)$',\
+			views.modify_listing,\
+			name="modify_listing"),
+
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/$',\
+			views.user_profile,\
+			name="user_profile"),
+
+	re_path(r'^profile_(?P<username>[A-Za-z0-9]+)/store',\
+		    views.user_store,\
+		    name="user_store"),
+
 	path('signup/', views.user_signup, name='user_signup'),
+
 	path('login/', views.user_login, name='user_login'),
+
 	path('logout/', views.account_logout, name='logout'),
+
 	path('employee_app/', views.employee_app, name='employee_application'),
+
 	path('app_confirm/', views.app_confirm, name='application_confirmation'),
+
 	path('employee_login/', views.employee_login, name='employee_login'),
-	path('<slug:username>_profile/', views.user_profile, name="user_profile"),
-	path('<slug:username>_profile/store/', views.user_store, name="user_store"),
 	path('cart/', views.user_cart, name='cart'),
 	path('add_to_cart_<int:itemid>_<int:author>', views.add_to_cart, name="add_to_cart"),
 	path('cart/inc_cart_item_<int:itemid>_<int:seller>', views.inc_cart_item, name="inc_cart_item"),
@@ -31,12 +73,10 @@ urlpatterns = [
 	path('checkout_card_<int:orderid>_<int:id>', views.checkout_card, name="checkout_card"),
 	path('cancel_checkout_<int:orderid>', views.cancel_checkout, name="cancel_checkout"),
 	path('cancel_checkout_no_order', views.cancel_checkout_no_order, name="cancel_checkout_no_order"),
-	path('<slug:username>_profile/store/add', views.add_item, name="add_item"),
-	path('<slug:username>_profile/store/drop_<int:itemid>', views.drop_item, name="drop_item"),
-	path('<slug:username>_profile/store/modify_<int:itemid>', views.modify_item, name="modify_item"),
 	path('<slug:username>_profile/payment/', views.addview_card, name="view/add_card"),
 	path('<slug:username>_profile/address/', views.addview_address, name="view/add_address"),
 	path('<slug:username>_profile/payment/drop_<int:id>', views.drop_card, name="drop_card"),
 	path('<slug:username>_profile/address/drop_<int:id>', views.drop_addr, name="drop_addr"),
 	path('<slug:username>_profile/orders', views.user_orders, name="orders")
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
+  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

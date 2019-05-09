@@ -1,24 +1,23 @@
 {% extends "base.html" %}
 
-{% block title%}Jammin'{% endblock title%}
+{% block title%}Jammin{% endblock title%}
 
 {% block content %}
-	<div>
-		<div name="mosts">
-			<div name="most_viewed">
-				<h3>Most Popular</h3>
-				<ul class="navbar">
-					{% for item in most_viewed %}
-						<li>
-							<div style="width: 100px; height: 100px;">
-								<a href="item_{{ item.itemid }}"><img src="{{ item.thumbnail.url }}"></a>
+	<div class="content_body">
+		<div id="highlights">
+			<h2>Popular</h2>
+			<div class="item_highlight">
+				{% for item in most_viewed %}
+						<a href="item_{{ item.itemid }}">
+							<div class="item_thumbnail_div" style="background: url({{ item.thumbnail.url }}) no-repeat center center">
+								<img src="{{ item.thumbnail.url }}" style="visibility: hidden;">
 							</div>
-							<div>
-								<a href="item_{{ item.itemid }}">{{ item.name }}</a>
-							</div>
-						</li>
-					{% endfor %}
-				</ul>
+						</a>
+				{% endfor %}
+			</div>
+
+			<div name="most_purchased">
+				<h2>Bestsellers</h2>
 			</div>
 		</div>
 	</div>
