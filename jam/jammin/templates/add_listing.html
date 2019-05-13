@@ -1,33 +1,44 @@
 {% extends "base.html" %}
 
-{% block title%}Add/Create Listing{% endblock title%}
+{% block title%}Add/Create Listing | Jammin{% endblock title%}
 
 {% block content %}
-	<div>
-		<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
-		<div>
-			<div class = "lists" style="width: 100px; height: 100px">
-				<img src="{{ item.thumbnail.url }}">
-	    	</div>
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				Edit
+			</div>
 
-	    	<div>
-	    		{{ item.name }}
-	    	</div>
-
-	    	<div>
-	    		{{ item.description }}
-	    	</div>
+			<div class="options">
+				<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+			</div>
 		</div>
-		<br>
-		<div>
-			<form action="" method="post">
+		
+		<div class="flex_box_col" style="color: #FFFFF0">
+			<div class="flex_box_row">
+				<div style="width: 100px; height: 100px; background: url({{ item.thumbnail.url }}) no-repeat center center">
+					<img src="{{ item.thumbnail.url }}" style="visibility: hidden;">
+	    		</div>
+	    		<div class="flex_box_col">
+	    			<div>
+	    				{{ item.name }}
+	    			</div>
+	    			<div style="word-break: break-all;">
+	    				{{ item.description }}
+	    			</div>
+	    		</div>
+			</div>
+
+			<form class="flex_box_col" action="" method="post">
 				{% csrf_token %}
 				<div>
-					<label>Price</label>{{ sells_form.price }}
+					<label>Price</label>
+					<div>{{ sells_form.price }}</div>
 				</div>
 
 				<div>
-					<label>Quantity</label>{{ sells_form.quantity }}
+					<label>Quantity</label>
+					<div>{{ sells_form.quantity }}</div>
 				</div>
 
 				<div>

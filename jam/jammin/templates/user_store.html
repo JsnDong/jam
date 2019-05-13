@@ -3,32 +3,35 @@
 {% block title%}Listings{% endblock title%}
 
 {% block content %}
-	<div name="listings">
-		<div name="listings_header">
-			<h2>
+	<div class="content_block">
+		<div class="section_options">
+			<div class="section">
 				{% if user == request.user.useraccount %}
 					My
 				{% else %}
 					{{ user.username }}'{% if user.username|slice:"-1:" != "s" %}s{% endif %}
 				{% endif %}
 				Listings
-			</h2>
+			</div>
 
-			{% if user == request.user.useraccount %}
-				<a href="/add_item">Add an Item</a>
-			{% endif %}
+			<div class="options">
+				{% if user == request.user.useraccount %}
+					<a href="/add_item" style="color: #FFFFF0; font-weight: bold">Add Item</a>
+				{% endif %}
+			</div>
+
 		</div>
 
-		<div name="listings_view">
+		<div class="flex_box_col">
 			{% for listing in user.sells_set.all %}
-				<div name="listing" class = "lists">
+				<div class = "flex_box_row" style="margin: 1vh 1vw; background: #FFFFF0">
 					<div name="thumbnail" style="width: 100px; height: 100px">
 						<img src="{{ listing.item.thumbnail.url }}">
 					</div>
 					<div name="details">
 						<div class = "item_details">
 							<a href="/item_{{ listing.item.itemid }}">{{ listing.item.name }}</a>
-							<p>{{listing.item.description}}</p>
+							<div style="word-break: break-all;">{{listing.item.description}}</div>
 						</div>
 
 						<div class = "listing_details">
@@ -38,11 +41,11 @@
 
 						<div class = "options">
 						{% if user == request.user.useraccount %}
-							<a href="modify_listing_{{listing.id}}">Edit</a>
+							<a href="modify_listing_{{listing.id}}" style="color: black">Edit</a>
 							or
-							<a href="drop_listing_{{listing.id}}">Delete</a>
+							<a href="drop_listing_{{listing.id}}" style="color: black">Delete</a>
 						{% else %}
-							<a href="add_to_cart_{{listing.item.itemid}}_{{listing.seller.userid}}">Add to Cart</a>
+							<a href="add_to_cart_{{listing.item.itemid}}_{{listing.seller.userid}}" style="color: black">Add to Cart</a>
 						{% endif %}
 						</div>
 					</div>

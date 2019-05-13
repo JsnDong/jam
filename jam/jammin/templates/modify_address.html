@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title%}Modify Address{% endblock title%}
+
+{% block content %}
+<div class="flex_box_col">
+        <form id="addaddr" action="" enctype="multipart/form-data" method="post" style="color: #FFFFF0">
+            {% csrf_token %}
+            <div class="add_address_input" style="display: none;">
+                <div class="flex_box_col">
+                    <label>Name</label>
+                    <div>{{ address_form.name }}</div>
+                </div>
+            </div>
+            
+            <div class="add_address_input">	
+                <div class="flex_box_col">
+                    <label>Street</label>
+                    <div>{{ address_form.street }}</div>
+                </div>
+            </div>
+
+            <div class="add_address_input">
+                <div class="flex_box_col">
+                    <label>City</label>
+                    <div>{{ address_form.city }}</div>
+                </div>
+            </div>
+
+            <div class="add_address_input">
+                <div class="flex_box_col">
+                    <label>State/Province</label>
+                    <div>{{ address_form.stateprovince }}</div>
+                </div>
+            </div>
+
+            <div class="add_address_input">
+                <div class="flex_box_col">
+                    <label>Country</label>
+                    <div>{{ address_form.country }}</div>
+                </div>
+            </div>
+
+            <div class="add_address_input">
+                <div class="flex_box_col">
+                    <label>Zip Code</label>
+                    <div>{{ address_form.zipcode }}</div>
+                </div>
+            </div>
+            <input class="add_address_input" type="submit" value="Save">
+        </form>
+    </div>
+{% endblock content %}

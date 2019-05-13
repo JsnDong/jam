@@ -1,23 +1,37 @@
 {% extends "base.html" %}
-{% block content %}
-<h2>Order Completed</h2>
 
-<p class="confirm">Thank you for shopping with Jammin!</p>
-<div>
-	{% if total == 0 %}
-	<h2>Error Completing Order. You can't buy something that is currently not in store. Check your Cart.</h2>
-	{% else %}
-	<h2>Reciept: Order ID: {{order.orderid}}</h2>
-	<h3>Date: {{order.date_placed}}</h3>
-	<h3>Subtotal: {{order.cart.total}}</h3>
-	<h3>Shipping Type: {{order.shipping.type}} (${{order.shipping.price}}.00)</h3>
-    <h3>Total: {{total}}</h3>
-    <h3>Card: {{order.card}}</h3>
-    <h3>Address: {{order.address}}</h3>
-	<h3>Delivery Tracking Code: {{order.delivery.tracking_code}}</h3>
-	<h3>Delivery Carrier: {{order.delivery.carrier}}</h3>
-	<h3>Status: {{order.delivery.status}}</h3>
-	{% endif %}
-</div>
-<a href="/">Return to Landing</a>
+{% block title %}Order Confirmation{% endblock title %}
+
+{% block content %}
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				Order Confirmation
+			</div>
+
+			<div class="options">
+				<a href="/" style="color: #FFFFF0; font-weight: bold">Return</a>
+			</div>
+			
+		</div>
+
+		<div class="flex_box_col">
+			Thank you for shopping with Jammin!
+
+			{% if total == 0 %}
+				<h2>Error Completing Order. You can't buy something that is currently not in store. Check your Cart.</h2>
+			{% else %}
+				<h2>Reciept: Order ID: {{order.orderid}}</h2>
+				<h3>Date: {{order.date_placed}}</h3>
+				<h3>Subtotal: {{order.cart.total}}</h3>
+				<h3>Shipping Type: {{order.shipping.type}} (${{order.shipping.price}}.00)</h3>
+	    		<h3>Total: {{total}}</h3>
+	    		<h3>Card: {{order.card}}</h3>
+	    		<h3>Address: {{order.address}}</h3>
+				<h3>Delivery Tracking Code: {{order.delivery.tracking_code}}</h3>
+				<h3>Delivery Carrier: {{order.delivery.carrier}}</h3>
+				<h3>Status: {{order.delivery.status}}</h3>
+			{% endif %}
+		</div>
+	</div>
 {%endblock content%}

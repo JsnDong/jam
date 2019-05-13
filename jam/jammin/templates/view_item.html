@@ -35,13 +35,6 @@
 				    					<div>Sold by <a href="/profile_{{ best_price.seller.username }}">{{ best_price.seller.username }}</a></div>
 				    					<div><a href="add_to_cart_{{item.itemid}}_{{best_price.seller.userid}}">Add to Cart</a></div>
 			    					</div>
-
-				    				<div class="flex_box_col" style="margin: .5vh 0">
-				    					<div style="font-size: 18px"> Best Price</div>
-				    					<div>${{ best_price.price }} [{{ best_price.quantity }}]</div>
-				    					<div>Sold by <a href="/profile_{{ best_price.seller.username }}">{{ best_price.seller.username }}</a></div>
-				    					<div><a href="add_to_cart_{{item.itemid}}_{{best_price.seller.userid}}">Add to Cart</a></div>
-				    				</div>
 				    			</div>
 			    			{% else %}
 			    				No Listings

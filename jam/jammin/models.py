@@ -178,7 +178,7 @@ class Review(models.Model):
 
 class Cart(models.Model):
 	cart_has = models.ManyToManyField('Sells', through='CartHas')
-	total = models.DecimalField(max_digits=11, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+	total = models.FloatField(default=0, validators=[MinValueValidator(0)])
 	ordered = models.BooleanField(default=False)
 
 	def __str__(self):

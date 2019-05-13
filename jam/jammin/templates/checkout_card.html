@@ -1,39 +1,41 @@
 {% extends "base.html" %}
 
-{% block title%}CheckoutCard{% endblock title%}
+{% block title%}Checkout | Jammin{% endblock title%}
 
 {% block content %}
-	<div>
-		<h2>Checkout Step 3: Select Payment Option</h2>
-	</div>
-	<div>
-		<!--List users cards-->
-		<h3>Your Cards</h3>
-		{% for Card in cards %}
-		<a href="/checkout_card_{{order.orderid}}_{{Card.id}}">"
-		<div style="float: left; width: 25%;" >
-					<ul>
-						<li>
-							<div class = "cardholder">
-								{{ Card.cardholder }}
-							</div>
-						</li>
-					</ul>
-				</div>
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				Checkout
+			</div>
 
-				<div style="float: left; width: 25%;">
-						<ul>
-							<li>
-								<div class = "card_number">
-										{{ Card.card_number }}
-								</div>
-							</li>
-						</ul>
-				</div>
+			<div class="options">
+				<a href="cancel_checkout_{{order.orderid}}" style="color: #FFFFF0; font-weight: bold">Cancel</a>
+			</div>
+			
 		</div>
-		{% endfor %}
-		<a href="">Add New Card</a>
-		<a href="cancel_checkout_{{order.orderid}}">Cancel</a>
+
+		<div class="flex_box_col" style="color: #FFFFF0">
+			<div>
+				Step 3: Select Payment Option
+			</div>
+
+			<div>
+				Your Cards
+			</div>
+
+			{% for Card in cards %}
+				<a href="/checkout_card_{{order.orderid}}_{{Card.id}}" style="color: #FFFFF0; font-weight: bold">
+					<div class="flex_box_row" style="width: 25%; justify-content: space-between;">
+						<div>{{ Card.cardholder }}</div>
+						<div>{{ Card.card_number }}</div>
+					</div>
+				</a>
+			{% endfor %}
+			
+			<a href="" style="color: #FFFFF0; font-weight: bold">Add New Card</a>
+		</div>
+		
 	</div>
 {% endblock content %}
 <!--1) address (select yours, add new)

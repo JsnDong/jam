@@ -16,9 +16,6 @@
 		<div class="flex_box_col" style="padding: 0 2vw;">
 		{% if user == request.user.useraccount %}
 			<div>
-				<a href="orders">Your Orders</a>
-			</div>
-			<div>
 				<a href="store" style="color: #FFFFF0; font-weight: bold">Your Listings</a>
 			</div>
 
@@ -29,8 +26,12 @@
 			<div>
 				<a href="address/" style="color: #FFFFF0; font-weight: bold">Your Addresses</a>
 			</div>
+
+			<div>
+				<a href="orders" style="color: #FFFFF0; font-weight: bold">Your Orders</a>
+			</div>
 		{% else %}
-			<div name="listings">
+			<div name="listings" style="color: #FFFFF0">
 				{% if user.sells_set.all|length != 0 %}
 					<div name="listings_header">
 						<h3>Listings</h3> <a href="store">View All</a>

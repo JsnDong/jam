@@ -3,41 +3,35 @@
 {% block title%}CheckoutAddress{% endblock title%}
 
 {% block content %}
-	<div>
-		<h2>Checkout Step 1: Select Shipping Address</h2>
-	</div>
-	<div>
-		<h3>Your Addresses:</h3>
-		<!--List users addresses-->
-		<div class="lists">
-			{% for a in addr %}
-			<a href="/checkout_address_{{a.id}}">
-				<div style="float: left; width: 25%;" >
-					<ul>
-						<li>
-							<div class = "Name">
-                                {{ a.name }}
-							</div>
-						</li>
-					</ul>
-				</div>
+	<div class="content_body">
+		<div class="section_options">
+			<div class="section">
+				Checkout
+			</div>
 
-				<div style="float: left; width: 25%;">
-						<ul>
-							<li>
-								<div class = "street">
-										{{ a.street }}
-								</div>
-							</li>
-						</ul>
-				</div>
-			</a>
-		{% endfor  %}
+			<div class="options">
+				<a href="cancel_checkout_no_order">Cancel</a>
+			</div>
 		</div>
-		<a href="">Add New Address</a>
-		<a href="cancel_checkout_no_order">Cancel</a>
+
+		<div class="flex_box_col" style="color: #FFFFF0">
+			<div>
+				Step 1: Select Shipping Address
+			</div>
+
+			<div>
+				Your Addresses:
+			</div>
+
+			{% for a in addr %}
+				<div class="flex_box_row">
+					<a href="/checkout_address_{{a.id}}" style="color: #FFFFF0; font-weight: bold">
+						<div>{{ a.name }}, {{ a.street }}</div>
+					</a>
+				</div>
+			{% endfor %}
+		</div>
+
+		<a href="" style="color: #FFFFF0">Add New Address</a>
 	</div>
 {% endblock content %}
-<!--1) address (select yours, add new)
-	2) Shipping options
-	3) Payment Options (select or add new)-->

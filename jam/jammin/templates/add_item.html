@@ -3,45 +3,53 @@
 {% block title%}Add to Store{% endblock title%}
 
 {% block content %}
-<body>
-	<h2>Store: Add Item</h2>
+	<div class="section_options">
+		<div class="section">
+			Store: Add Item
+		</div>
 
-	<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+		<div class="options">
+			<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+		</div>
+	</div>
 
-	<form action="" enctype="multipart/form-data" method="post">
+	<form action="" class="flex_box_col" style="color: #FFFFF0" enctype="multipart/form-data" method="post">
 		{% csrf_token %}
 
-		<p>
+		<div class="flex_box_col">
 			<label>Name</label>
-			{{ item_form.name }}
-		</p>
+			<div>{{ item_form.name }}</div>
+		</div>
 
-		<p>
+		<div class="flex_box_col">
 			<label>Image</label>
-			{{ item_form.image }}
-		</p>
+			<div>{{ item_form.image }}</div>
+		</div>
 
-		<p>
+		<div class="flex_box_col">
 			<label>Category</label>
-			{{ item_form.dept }}
-		</p>
+			<div>{{ item_form.dept }}</div>
+		</div>
 
-		<p>
+		<div class="flex_box_col">
 			<label>Description</label>
-			{{ item_form.description }}
-		</p>
+			<div>{{ item_form.description }}</div>
+		</div>
 
-		<p>
+		<div class="flex_box_col">
 			<label>Price</label>
-			{{ sells_form.price }}
-		</p>
+			<div>{{ sells_form.price }}</div>
+		</div>
 
-		<p>
+		<div class="flex_box_col">
 			<label>Quantity</label>
-			{{ sells_form.quantity }}
-		</p>
+			<div>{{ sells_form.quantity }}</div>
+		</div>
 
-		<input type="submit" name="another" value="Add and Another">
-		<input type="submit" name="view" value="Add and View">
+		<div class="flex_box_col">
+			<div>
+				<input type="submit" name="view" value="Add">
+			</div>
+		</div>
 	</form>
 {%endblock content%}

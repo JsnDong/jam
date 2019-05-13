@@ -68,7 +68,7 @@
 					</div>
 
 					<div>
-						{{ card.card_number }}
+						XXXX-XXXX-XXXX-{{card.card_number|slice:"-4:"}}
 					</div>
 
 					<div>
@@ -76,7 +76,7 @@
 					</div>
 
 					<div>
-						<a href="modify_card_{{card.id}}">Edit</a> | <a href="drop_card_{{card.id}}">Delete</a> 
+						<a href="drop_card_{{card.id}}">Delete</a> 
 					</div>
 				</div>
 			{% endfor %}
